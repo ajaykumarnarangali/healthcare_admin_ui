@@ -3,6 +3,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicOnlyRoute from "./routes/PublicOnlyRoute";
 import LoginPage from "./features/auth/pages/LoginPage";
 import { Fragment } from "react/jsx-runtime";
+import NotFoundPage from "./features/auth/components/NotFound";
 
 function App() {
 
@@ -27,6 +28,10 @@ function App() {
       id: "global-admin",
       element: <ProtectedRoute allowedRole="GLOBAL_ADMIN" />,
     },
+    {
+      path: "*",
+      element: <NotFoundPage />
+    }
   ],
     {
       async patchRoutesOnNavigation({ path, patch }) {
