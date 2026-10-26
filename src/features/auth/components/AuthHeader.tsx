@@ -22,7 +22,7 @@ function AuthHeader() {
                     MediConnect
                 </div>
                 <div className="text-[11px] text-text-muted">
-                    Patient Portal
+                    Admin Portal
                 </div>
             </div>
         </div>

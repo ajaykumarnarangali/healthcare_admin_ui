@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import PublicOnlyRoute from "./routes/PublicOnlyRoute";
 import LoginPage from "./features/auth/pages/LoginPage";
 import { Fragment } from "react/jsx-runtime";
 
@@ -8,18 +9,23 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/",
-      element: <LoginPage />,
+      element: <PublicOnlyRoute />,
+      children: [
+        {
+          path: "/",
+          element: <LoginPage />,
+        }
+      ],
     },
     {
       path: "/hospital-admin",
       id: "hospital-admin",
-      element: <ProtectedRoute />,
+      element: <ProtectedRoute allowedRole="HOSPITAL_ADMIN" />,
     },
     {
       path: "/global-admin",
       id: "global-admin",
-      element: <ProtectedRoute />,
+      element: <ProtectedRoute allowedRole="GLOBAL_ADMIN" />,
     },
   ],
     {
