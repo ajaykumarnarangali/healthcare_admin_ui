@@ -1,9 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { useAppSelector } from "../hooks/userAppSelector";
-import { IconBell } from "../components/Icons";
+import { IconBell, IconMenu } from "../components/Icons";
 import { getPermittedSidebarGroups } from "../utils/navigation";
 
-const HospitalAdminHeader = () => {
+type HospitalAdminHeaderProps = {
+    onMenuClick: () => void;
+};
+
+const HospitalAdminHeader = ({ onMenuClick }: HospitalAdminHeaderProps) => {
     const location = useLocation();
 
     const currentItem = getPermittedSidebarGroups("HOSPITAL_ADMIN")
@@ -13,10 +17,21 @@ const HospitalAdminHeader = () => {
     const user = useAppSelector((state) => state.user);
 
     return (
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-            <h1 className="text-[17px] font-semibold text-slate-800">
-                {currentItem?.label ?? "Dashboard"}
-            </h1>
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+            <div className="flex min-w-0 items-center gap-3">
+                <button
+                    type="button"
+                    aria-label="Open sidebar"
+                    onClick={onMenuClick}
+                    className="rounded-md p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+                >
+                    <IconMenu size={22} />
+                </button>
+
+                <h1 className="text-[17px] font-semibold text-slate-800">
+                    {currentItem?.label ?? "Dashboard"}
+                </h1>
+            </div>
 
             <div className="flex items-center gap-4">
                 <button

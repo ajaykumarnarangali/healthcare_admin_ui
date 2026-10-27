@@ -3,8 +3,11 @@ import { IconLogout } from "../components/Icons";
 import { getPermittedSidebarGroups } from "../utils/navigation";
 import { useAppSelector } from "../hooks/userAppSelector";
 
+type HospitalAdminSidebarProps = {
+    onNavigate?: () => void;
+};
 
-function HospitalAdminSidebar() {
+function HospitalAdminSidebar({ onNavigate }: HospitalAdminSidebarProps) {
 
     const permittedSidebarData = getPermittedSidebarGroups("HOSPITAL_ADMIN");
     const user = useAppSelector((state) => state.user);
@@ -39,7 +42,7 @@ function HospitalAdminSidebar() {
                 </div>
             </div>
 
-             {/* Middle - Scrollable */}
+            {/* Middle - Scrollable */}
             <div className="sidebar-scrollbar min-h-0 flex-1 overflow-y-auto p-3 flex flex-col gap-5">
                 {permittedSidebarData.map((group) => (
                     <div key={group.label}>
@@ -52,6 +55,7 @@ function HospitalAdminSidebar() {
                                 <NavLink
                                     key={item.path}
                                     to={item.path}
+                                    onClick={onNavigate}
                                     className={({ isActive }) =>
                                         `relative flex items-center gap-3 rounded-md py-2.5 px-3 transition-colors ${isActive
                                             ? "bg-white/15 text-white"
