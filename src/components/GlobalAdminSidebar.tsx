@@ -3,7 +3,11 @@ import { IconLogout } from "../components/Icons";
 import { getPermittedSidebarGroups } from "../utils/navigation";
 import { useAppSelector } from "../hooks/userAppSelector";
 
-function GlobalAdminSidebar() {
+type GlobalAdminSidebarProps = {
+    onNavigate?: () => void;
+};
+
+function GlobalAdminSidebar({ onNavigate }: GlobalAdminSidebarProps) {
 
     const permittedSidebarData = getPermittedSidebarGroups("GLOBAL_ADMIN");
     const user = useAppSelector((state) => state.user);
@@ -51,6 +55,7 @@ function GlobalAdminSidebar() {
                                 <NavLink
                                     key={item.path}
                                     to={item.path}
+                                    onClick={onNavigate}
                                     className={({ isActive }) =>
                                         `relative flex items-center gap-3 rounded-md py-2.5 px-3 transition-colors ${isActive
                                             ? "bg-white/15 text-white"
