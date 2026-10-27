@@ -114,3 +114,12 @@ svg {
 .transition-sidebar {
   transition: transform 0.25s ease, width 0.25s ease;
 }
+
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Chrome, Edge, Safari */
+}

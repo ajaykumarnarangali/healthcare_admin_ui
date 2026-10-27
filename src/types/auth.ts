@@ -16,7 +16,7 @@ export type PermissionState = {
     permissions: string[];
 }
 
-type Role =
+export type Role =
     | "HOSPITAL_ADMIN"
     | "GLOBAL_ADMIN";
 
