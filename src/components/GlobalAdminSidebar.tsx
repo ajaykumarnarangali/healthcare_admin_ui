@@ -2,12 +2,15 @@ import { NavLink } from "react-router-dom";
 import { IconLogout } from "../components/Icons";
 import { getPermittedSidebarGroups } from "../utils/navigation";
 import { useAppSelector } from "../hooks/userAppSelector";
+import { useLogOut } from "../features/auth/hooks/useLogout";
 
 type GlobalAdminSidebarProps = {
     onNavigate?: () => void;
 };
 
 function GlobalAdminSidebar({ onNavigate }: GlobalAdminSidebarProps) {
+
+    const { isLoading, signout } = useLogOut();
 
     const permittedSidebarData = getPermittedSidebarGroups("GLOBAL_ADMIN");
     const user = useAppSelector((state) => state.user);
@@ -102,12 +105,26 @@ function GlobalAdminSidebar({ onNavigate }: GlobalAdminSidebarProps) {
                         </div>
                     </div>
                 </div>
-                <div className="flex gap-2 hover:bg-white/15 cursor-pointer p-3  rounded-lg items-center">
-                    <IconLogout size={17} className="text-white/60" />
+                <button
+                    onClick={signout}
+                    disabled={isLoading}
+                    className="flex w-full items-center gap-2 rounded-lg p-3
+                                cursor-pointer
+                                transition-all duration-200 ease-in-out
+                                hover:bg-white/15 hover:translate-x-1
+                                active:scale-[0.98]
+                                disabled:cursor-not-allowed disabled:opacity-60">
+                    <IconLogout
+                        size={17}
+                        className={`text-white/60 transition-transform duration-300
+                             ${isLoading ? "animate-pulse" : "group-hover:rotate-[-10deg]"
+                        }`}
+                    />
+
                     <p className="text-sm text-white/60">
-                        Sign Out
+                        {isLoading ? "Signing out..." : "Sign Out"}
                     </p>
-                </div>
+                </button>
             </div>
         </div>
     )

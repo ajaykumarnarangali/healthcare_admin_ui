@@ -21,3 +21,8 @@ export async function getCurrentUser() {
     const response = await api.get("/auth/me");
     return response.data;
 }
+
+export async function signOut() {
+    const response = await api.post("/auth/signout", {}, { withCredentials: true });
+    return response.data
+}
