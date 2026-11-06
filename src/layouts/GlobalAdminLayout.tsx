@@ -7,7 +7,7 @@ function GlobalAdminLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="min-h-screen w-full">
+        <div className="h-screen w-full overflow-hidden">
             {/* Mobile overlay */}
             {isSidebarOpen && (
                 <button
@@ -31,11 +31,14 @@ function GlobalAdminLayout() {
             </aside>
 
             {/* Main content */}
-            <main className="min-w-0 lg:ml-60">
+            <main className="h-full min-w-0 flex flex-col lg:ml-60">
                 <GlobalAdminHeader
                     onMenuClick={() => setIsSidebarOpen(true)}
                 />
-                <Outlet />
+
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <Outlet />
+                </div>
             </main>
         </div>
     );
