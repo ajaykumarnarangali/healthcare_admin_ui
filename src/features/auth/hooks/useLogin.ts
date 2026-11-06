@@ -42,8 +42,8 @@ export function useLogin() {
                 dispatch(setUser({
                     email: data.user.email,
                     role: data.user.role,
-                    name: null,
-                    profileImage: null,
+                    name: data.user.name ?? null,
+                    profileImage: data.user.profile_photo ?? null,
                 }));
 
                 dispatch(setAuthenticated(true));

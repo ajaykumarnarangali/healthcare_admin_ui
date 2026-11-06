@@ -1,6 +1,7 @@
 import type { RouteObject } from "react-router-dom";
 import GlobalAdminLayout from "../layouts/GlobalAdminLayout";
 import GlobalAdminDashboard from "../features/dashboard/pages/GlobalAdminDashboard";
+import ProfileManagement from "../features/user/pages/ProfileManagement";
 
 const globalAdminRoutes: RouteObject[] = [
     {
@@ -41,6 +42,10 @@ const globalAdminRoutes: RouteObject[] = [
             {
                 path: "reports",
                 element: <div>Reports</div>,
+            },
+            {
+                path: "profile",
+                element: <ProfileManagement />
             },
             {
                 path: "settings",

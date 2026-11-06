@@ -4,6 +4,7 @@ import PublicOnlyRoute from "./routes/PublicOnlyRoute";
 import LoginPage from "./features/auth/pages/LoginPage";
 import { Fragment } from "react/jsx-runtime";
 import NotFoundPage from "./features/auth/components/NotFound";
+import { Toaster } from "sonner";
 
 function App() {
 
@@ -54,6 +55,7 @@ function App() {
 
   return (
     <Fragment>
+      <Toaster position="top-right" richColors />
       <RouterProvider router={router} />
     </Fragment>
   )

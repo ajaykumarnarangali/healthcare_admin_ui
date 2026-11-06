@@ -40,7 +40,8 @@ type GlobalAdminAppSection =
     | 'payments'
     | 'notifications'
     | 'reports'
-    | 'settings';
+    | 'settings'
+    | 'profile';
 
 type GlobalAdminSidebarItem = {
     id: GlobalAdminAppSection;
@@ -120,5 +121,7 @@ export type GlobalAdminPermission =
     | 'report:view'
 
     // Account
+    | 'profile:view'
+    | 'profile:update'
     | 'settings:view'
     | 'settings:update';

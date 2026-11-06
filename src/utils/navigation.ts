@@ -231,6 +231,13 @@ export function getGlobalAdminSidebarData(): GlobalAdminSidebarGroup[] {
             label: 'Account',
             items: [
                 {
+                    id: 'profile',
+                    label: 'My Profile',
+                    path: '/global-admin/profile',
+                    Icon: IconUser,
+                    permission: 'profile:view',
+                },
+                {
                     id: 'settings',
                     label: 'Settings',
                     path: '/global-admin/settings',
