@@ -2,6 +2,9 @@ import type { RouteObject } from "react-router-dom";
 import GlobalAdminLayout from "../layouts/GlobalAdminLayout";
 import GlobalAdminDashboard from "../features/dashboard/pages/GlobalAdminDashboard";
 import ProfileManagement from "../features/user/pages/ProfileManagement";
+import HospitalManagement from "../features/hospital/pages/HospitalManagement";
+import CreateHospitalPage from "../features/hospital/pages/CreateHospitalPage";
+import EditHospitalPage from "../features/hospital/pages/EditHospitalPage";
 
 const globalAdminRoutes: RouteObject[] = [
     {
@@ -13,7 +16,20 @@ const globalAdminRoutes: RouteObject[] = [
             },
             {
                 path: "hospitals",
-                element: <div>Hospitals</div>,
+                children: [
+                    {
+                        index: true,
+                        element: <HospitalManagement />,
+                    },
+                    {
+                        path: "create",
+                        element: <CreateHospitalPage />,
+                    },
+                    {
+                        path: ":hospitalId/edit",
+                        element: <EditHospitalPage />,
+                    },
+                ],
             },
             {
                 path: "hospital-admins",
