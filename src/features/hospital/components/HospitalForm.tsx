@@ -1,16 +1,30 @@
-import HospitalFormHeader from './HospitalFormHeader'
-import HospitalFormDetails from './HospitalFormDetails'
 import { useState } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, FormProvider } from "react-hook-form";
+import {
+    getHospitalSchema,
+    type HospitalFormInput,
+    type HospitalFormOutput
+} from '../schemas/hospital.schema';
+
+import HospitalFormHeader from './HospitalFormHeader';
+import HospitalFormDetails from './HospitalFormDetails';
+
 
 interface HospitalFormProps {
     mode: "create" | "edit";
-    onSubmit: () => void;
+    handleFormSubmit: () => void;
 }
 
 function HospitalForm(props: HospitalFormProps) {
 
-    const { mode, onSubmit } = props;
+    const { mode, handleFormSubmit } = props;
     const [isFormEditable, setFormEditable] = useState(mode === "create");
+
+    const schema = getHospitalSchema(mode);
+    const method = useForm<HospitalFormInput, any, HospitalFormOutput>({
+        resolver: zodResolver(schema),
+    })
 
     function handleCancel() {
 
@@ -19,21 +33,32 @@ function HospitalForm(props: HospitalFormProps) {
 
     return (
         <div>
-            <HospitalFormHeader
-                formManagement={
-                    mode === "edit"
-                        ? {
-                            mode,
-                            isFormEditable,
-                            setFormEditable,
-                            handleCancel,
+            <FormProvider {...method}>
+                <form
+                    onSubmit={method.handleSubmit(
+                        (data) => handleFormSubmit(),
+                        (errors) => {
+                            console.log("Validation errors:", errors);
                         }
-                        : { mode }
-                }
-            />
-            <HospitalFormDetails
-                formManagement={{ isFormEditable }}
-            />
+                    )}
+                >
+                    <HospitalFormHeader
+                        formManagement={
+                            mode === "edit"
+                                ? {
+                                    mode,
+                                    isFormEditable,
+                                    setFormEditable,
+                                    handleCancel,
+                                }
+                                : { mode }
+                        }
+                    />
+                    <HospitalFormDetails
+                        formManagement={{ isFormEditable }}
+                    />
+                </form>
+            </FormProvider>
         </div>
     )
 }

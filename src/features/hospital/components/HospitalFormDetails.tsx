@@ -1,4 +1,6 @@
 import React from 'react'
+import { useFormContext } from 'react-hook-form';
+import type { HospitalFormInput } from '../schemas/hospital.schema';
 
 type HDetailsProps = {
     formManagement: {
@@ -7,6 +9,11 @@ type HDetailsProps = {
 };
 function HospitalFormDetails({ formManagement }: HDetailsProps) {
     const { isFormEditable } = formManagement;
+    const {
+        register: registerField,
+        formState: { errors },
+        getValues,
+    } = useFormContext<HospitalFormInput>();
 
     const inputClass = `h-[42px] w-full px-3 border rounded-lg outline-none text-xs ${isFormEditable
         ? "bg-bg border-slate-200 focus:border-[#1a5276] focus:ring-2 focus:ring-[#1a5276]/10"
@@ -32,16 +39,23 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
 
                     {/* Hospital Name */}
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="hospitalName" className="text-xs uppercase font-semibold text-text-muted">
+                        <label htmlFor="name" className="text-xs uppercase font-semibold text-text-muted">
                             Hospital Name <span className="text-red-500">*</span>
                         </label>
                         <input
-                            id="hospitalName"
+                            id="name"
                             type="text"
                             placeholder="Enter hospital name"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("name")}
+                            aria-invalid={!!errors.name}
+                            className={`${getErrorInputClass(!!errors.name)} placeholder:text-xs`}
                         />
+                        {errors.name && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.name.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Email Address */}
@@ -54,8 +68,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="email"
                             placeholder="Enter hospital email"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("email")}
+                            aria-invalid={!!errors.email}
+                            className={`${getErrorInputClass(!!errors.email)} placeholder:text-xs`}
                         />
+                        {errors.email && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.email.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Phone Number */}
@@ -68,8 +89,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="tel"
                             placeholder="Enter hospital phone number"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("phone")}
+                            aria-invalid={!!errors.phone}
+                            className={`${getErrorInputClass(!!errors.phone)} placeholder:text-xs`}
                         />
+                        {errors.phone && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.phone.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Website */}
@@ -77,29 +105,22 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                         <label htmlFor="website" className="text-xs uppercase font-semibold text-text-muted">
                             Website
                         </label>
+
                         <input
                             id="website"
                             type="url"
                             placeholder="Enter hospital website"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("website")}
+                            aria-invalid={!!errors.website}
+                            className={`${getErrorInputClass(!!errors.website)} placeholder:text-xs`}
                         />
-                    </div>
 
-                    {/* Hospital Status */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="status" className="text-xs uppercase font-semibold text-text-muted">
-                            Hospital Status <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            id="status"
-                            disabled={!isFormEditable}
-                            defaultValue="ACTIVE"
-                            className={`${getErrorInputClass(false)} cursor-pointer disabled:cursor-not-allowed`}
-                        >
-                            <option value="ACTIVE">Active</option>
-                            <option value="INACTIVE">Inactive</option>
-                        </select>
+                        {errors.website && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.website.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Description */}
@@ -112,10 +133,16 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             rows={4}
                             placeholder="Enter hospital description"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} h-auto py-3 placeholder:text-xs resize-none`}
+                            {...registerField("description")}
+                            aria-invalid={!!errors.description}
+                            className={`${getErrorInputClass(!!errors.description)} h-auto py-3 placeholder:text-xs resize-none`}
                         />
+                        {errors.description && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.description.message}
+                            </p>
+                        )}
                     </div>
-
                 </div>
             </div>
 
@@ -137,8 +164,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="text"
                             placeholder="Enter street address"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("streetAddress")}
+                            aria-invalid={!!errors.streetAddress}
+                            className={`${getErrorInputClass(!!errors.streetAddress)} placeholder:text-xs`}
                         />
+                        {errors.streetAddress && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.streetAddress.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* City */}
@@ -151,8 +185,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="text"
                             placeholder="Enter city"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("city")}
+                            aria-invalid={!!errors.city}
+                            className={`${getErrorInputClass(!!errors.city)} placeholder:text-xs`}
                         />
+                        {errors.city && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.city.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* State */}
@@ -165,8 +206,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="text"
                             placeholder="Enter state or province"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("state")}
+                            aria-invalid={!!errors.state}
+                            className={`${getErrorInputClass(!!errors.state)} placeholder:text-xs`}
                         />
+                        {errors.state && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.state.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Country */}
@@ -179,8 +227,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="text"
                             placeholder="Enter country"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("country")}
+                            aria-invalid={!!errors.country}
+                            className={`${getErrorInputClass(!!errors.country)} placeholder:text-xs`}
                         />
+                        {errors.country && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.country.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Postal Code */}
@@ -193,8 +248,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                             type="text"
                             placeholder="Enter postal code"
                             readOnly={!isFormEditable}
-                            className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                            {...registerField("postalCode")}
+                            aria-invalid={!!errors.postalCode}
+                            className={`${getErrorInputClass(!!errors.postalCode)} placeholder:text-xs`}
                         />
+                        {errors.postalCode && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.postalCode.message}
+                            </p>
+                        )}
                     </div>
 
                 </div>

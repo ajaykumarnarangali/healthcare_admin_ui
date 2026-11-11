@@ -6,7 +6,7 @@ function EditHospitalPage() {
             <div className="max-w-[720px]">
                 <HospitalForm
                     mode="edit"
-                    onSubmit={() => { }}
+                    handleFormSubmit={() => { }}
                 />
             </div>
         </div>

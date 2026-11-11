@@ -46,7 +46,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
                 {
                     mode === "create" && (
                         <button
-                            type="button"
+                            type="submit"
                             className="flex gap-2 text-[13px] font-semibold text-primary border
                                         rounded-lg border-primary items-center px-4 py-[10px]
                                         hover:bg-primary hover:text-white

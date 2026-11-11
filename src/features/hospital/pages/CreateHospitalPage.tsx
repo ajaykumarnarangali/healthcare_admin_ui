@@ -6,7 +6,7 @@ function CreateHospitalPage() {
       <div className="max-w-[720px]">
         <HospitalForm
           mode="create"
-          onSubmit={() => { }}
+          handleFormSubmit={() => { }}
         />
       </div>
     </div>

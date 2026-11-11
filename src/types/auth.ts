@@ -8,7 +8,7 @@ export interface AuthState {
 export type UserState = {
     name: string | null;
     email: string | null;
-    role: string | null;
+    role: Role | null;
     profileImage: string | null;
 };
 
