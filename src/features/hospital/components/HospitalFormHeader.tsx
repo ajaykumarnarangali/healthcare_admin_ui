@@ -8,7 +8,6 @@ type HospitalFormHeaderProps = {
         mode: "edit" | "create"
         isFormEditable?: boolean;
         imageUrl?: string;
-        // isSubmitting?: boolean,
         setFormEditable?: React.Dispatch<React.SetStateAction<boolean>>;
         handleCancel?: () => void;
     };
@@ -21,7 +20,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
 
     const {
         register: registerField,
-        formState: { errors },
+        formState: { errors, isSubmitting },
         control
     } = useFormContext<HospitalFormInput>();
 
@@ -98,7 +97,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
                                         hover:bg-primary hover:text-white
                                         transition-colors duration-200 ease-in-out"
                         >
-                            Create Hospital
+                            {isSubmitting ? "Creating..." : "Create Hospital"}
                         </button>
                     )
                 }
@@ -116,7 +115,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
                                 type="submit"
                                 className="flex gap-2 text-nowrap text-[13px] text-white font-bold rounded-lg items-center px-4 py-[10px] bg-primary"
                             >
-                                Save Changes
+                                {isSubmitting ? "Saving..." : "Save Changes"}
                             </button>
                         </>
                     ) :

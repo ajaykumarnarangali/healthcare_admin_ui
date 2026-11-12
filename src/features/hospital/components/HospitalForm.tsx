@@ -13,23 +13,24 @@ import HospitalFormDetails from './HospitalFormDetails';
 
 interface HospitalFormProps {
     mode: "create" | "edit";
+    initFormData: HospitalFormInput
     handleFormSubmit: (data: any) => void;
 }
 
 function HospitalForm(props: HospitalFormProps) {
 
-    const { mode, handleFormSubmit } = props;
+    const { mode, initFormData, handleFormSubmit } = props;
     const [isFormEditable, setFormEditable] = useState(mode === "create");
 
     const schema = getHospitalSchema(mode);
     const method = useForm<HospitalFormInput, any, HospitalFormOutput>({
         resolver: zodResolver(schema),
-    })
+        defaultValues: initFormData,
+    });
 
     function handleCancel() {
 
     }
-
 
     return (
         <div>

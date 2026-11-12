@@ -180,6 +180,25 @@ export function getHospitalSchema(mode: "create" | "edit") {
     });
 }
 
+export const hospitalInitFormData = {
+    name: "",
+    email: "",
+    phone: "",
+    website: "",
+    description: "",
+
+    streetAddress: "",
+    city: "",
+    state: "",
+    country: "",
+    postalCode: "",
+
+    latitude: "",
+    longitude: "",
+
+    hospitalImage: undefined,
+};
+
 export type HospitalFormInput = zod.input<typeof hospitalBaseSchema>;
 export type HospitalFormOutput = zod.output<typeof hospitalBaseSchema>;
 

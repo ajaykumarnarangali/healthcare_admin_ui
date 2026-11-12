@@ -13,7 +13,8 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
     const { isFormEditable } = formManagement;
     const {
         register: registerField,
-        formState: { errors }
+        formState: { errors },
+        setValue
     } = useFormContext<HospitalFormInput>();
 
     const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
@@ -31,7 +32,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
         }`;
 
     const handleLocationSelect = useCallback((location: Location) => {
-        console.log(location);
+        if (
+            !Number.isFinite(location.latitude) ||
+            !Number.isFinite(location.longitude)
+        ) {
+            return;
+        }
+
+        setValue("latitude", String(location.latitude));
+        setValue("longitude", String(location.longitude));
     }, []);
 
     function handleOpenMap() {
