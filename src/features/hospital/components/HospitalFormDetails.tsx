@@ -1,6 +1,7 @@
-import React from 'react'
 import { useFormContext } from 'react-hook-form';
 import type { HospitalFormInput } from '../schemas/hospital.schema';
+import LocationPicker from './LocationPicker';
+import { useRef, useState } from 'react';
 
 type HDetailsProps = {
     formManagement: {
@@ -11,9 +12,11 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
     const { isFormEditable } = formManagement;
     const {
         register: registerField,
-        formState: { errors },
-        getValues,
+        formState: { errors }
     } = useFormContext<HospitalFormInput>();
+
+    const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
+    const ContainerRef = useRef<HTMLDivElement>(null);
 
     const inputClass = `h-[42px] w-full px-3 border rounded-lg outline-none text-xs ${isFormEditable
         ? "bg-bg border-slate-200 focus:border-[#1a5276] focus:ring-2 focus:ring-[#1a5276]/10"
@@ -26,8 +29,27 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
             : ""
         }`;
 
+    function handleLocationSelect(data: any) {
+        console.log(data);
+    }
+
+    function handleOpenMap() {
+        setIsMapOpen(true);
+
+        requestAnimationFrame(() => {
+            ContainerRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "end"
+            });
+        });
+    }
+
+    function handleCloseMap() {
+        setIsMapOpen(false);
+    }
+
     return (
-        <div className="w-full flex flex-col gap-4 pb-6">
+        <div ref={ContainerRef} className="w-full relative flex flex-col gap-4 pb-6">
 
             {/* Hospital Information */}
             <div className="p-3 pt-4 pb-6 lg:p-6 rounded-xl border border-slate-200 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
@@ -263,7 +285,12 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
             </div>
 
             {/* Hospital Location */}
-            <div className="p-3 pt-4 pb-6 lg:p-6 rounded-xl border border-slate-200 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
+            <div
+                className={`p-3 relative overflow-hidden pt-4 pb-6 mb-6 lg:p-6 rounded-xl border
+                            border-slate-200 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04)] 
+                            transition-all duration-1000 ease-in-out ${isMapOpen ? "h-[400px]" : "h-auto"
+                    }`}
+            >
                 <h2 className="mb-3 lg:mb-6 text-sm font-bold text-text">
                     Hospital Location
                 </h2>
@@ -280,15 +307,24 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
 
                     <button
                         type="button"
+                        onClick={handleOpenMap}
                         disabled={!isFormEditable}
                         className="w-fit flex items-center gap-2 text-[13px] font-semibold text-primary border border-primary rounded-lg px-4 py-[10px] hover:bg-primary hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Pick Hospital Location
                     </button>
                 </div>
-            </div>
+                {isMapOpen && (
+                    <div className="absolute inset-0 z-50">
+                        <LocationPicker
+                            onLocationSelect={handleLocationSelect}
+                            onClose={handleCloseMap}
+                        />
+                    </div>
 
-        </div>
+                )}
+            </div>
+        </div >
     )
 }
 

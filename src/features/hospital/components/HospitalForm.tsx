@@ -13,7 +13,7 @@ import HospitalFormDetails from './HospitalFormDetails';
 
 interface HospitalFormProps {
     mode: "create" | "edit";
-    handleFormSubmit: () => void;
+    handleFormSubmit: (data: any) => void;
 }
 
 function HospitalForm(props: HospitalFormProps) {
@@ -36,7 +36,7 @@ function HospitalForm(props: HospitalFormProps) {
             <FormProvider {...method}>
                 <form
                     onSubmit={method.handleSubmit(
-                        (data) => handleFormSubmit(),
+                        (data) => handleFormSubmit(data),
                         (errors) => {
                             console.log("Validation errors:", errors);
                         }

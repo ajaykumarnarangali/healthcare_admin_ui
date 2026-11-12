@@ -25,6 +25,24 @@ export const IconDashboard = (p: IconProps) => (
     </svg>
 );
 
+export const IconClose = (p: IconProps) => (
+    <svg
+        width={p.size ?? 20}
+        height={p.size ?? 20}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={p.className}
+        style={p.style}
+    >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+    </svg>
+);
+
 export const IconDoctor = (p: IconProps) => (
     <svg width={p.size ?? 20} height={p.size ?? 20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={p.className} style={p.style}>
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /><path d="M12 11v4m-2-2h4" />

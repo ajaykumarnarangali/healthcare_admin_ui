@@ -17,7 +17,7 @@ function ProfileHeader({ formManagement }: ProfileHeaderProps) {
 
     const { isFormEditable, setFormEditable, handleCancel, isSubmitting } = formManagement;
     const user = useAppSelector((state) => state.user);
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const {
         register: registerField,

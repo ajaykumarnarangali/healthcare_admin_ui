@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useFormContext, useWatch } from 'react-hook-form';
+import type { HospitalFormInput } from '../schemas/hospital.schema';
 
 
 type HospitalFormHeaderProps = {
     formManagement: {
         mode: "edit" | "create"
         isFormEditable?: boolean;
+        imageUrl?: string;
         // isSubmitting?: boolean,
         setFormEditable?: React.Dispatch<React.SetStateAction<boolean>>;
         handleCancel?: () => void;
@@ -12,7 +15,29 @@ type HospitalFormHeaderProps = {
 };
 function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
 
-    const { mode, isFormEditable, setFormEditable } = formManagement;
+    const { mode, isFormEditable, imageUrl, setFormEditable } = formManagement;
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const initialImage = imageUrl ?? "https://placehold.co/40x40";
+
+    const {
+        register: registerField,
+        formState: { errors },
+        control
+    } = useFormContext<HospitalFormInput>();
+
+    const hospitalImage = useWatch({
+        control,
+        name: "hospitalImage"
+    });
+    useEffect(() => {
+        if (!hospitalImage?.length) return;
+
+        const imageUrl = URL.createObjectURL(hospitalImage[0]);
+        setPreviewUrl(imageUrl);
+
+        return () => URL.revokeObjectURL(imageUrl);
+    }, [hospitalImage]);
+
 
     return (
         <div
@@ -21,12 +46,33 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
                     flex flex-col gap-6 lg:flex-row lg:items-center justify-between"
         >
             <div className="flex gap-4 items-center">
-                <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                    <img
-                        src="/hospital_image.png"
-                        alt="Hospital"
-                        className="w-full h-full object-cover"
-                    />
+                <div>
+                    <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <label
+                            htmlFor="hospitalImage"
+                            className="block w-full h-full cursor-pointer"
+                        >
+                            <img
+                                src={previewUrl ?? initialImage}
+                                alt="Hospital"
+                                className="w-full h-full object-cover"
+                            />
+                        </label>
+                        {(mode === "create" || (mode === "edit" && isFormEditable)) && (
+                            <input
+                                type="file"
+                                id="hospitalImage"
+                                accept=".jpg,.jpeg,.png,.webp"
+                                {...registerField("hospitalImage")}
+                                className="hidden"
+                            />
+                        )}
+                    </div>
+                    {errors.hospitalImage?.message && (
+                        <p className="text-xs text-red-500 mt-1">
+                            {errors.hospitalImage.message}
+                        </p>
+                    )}
                 </div>
 
                 <div className="min-w-0">

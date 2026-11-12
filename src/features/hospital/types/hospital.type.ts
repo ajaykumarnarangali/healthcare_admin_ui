@@ -21,3 +21,19 @@ export type Hospital = {
     admins: number;
     createdAt: string;
 }
+
+export type Location = {
+    latitude: number;
+    longitude: number;
+};
+
+export type LocationPickerProps = {
+    currentLocation?: Location,
+    onClose: () => void;
+    onLocationSelect: (location: Location) => void;
+};
+
+export type LocationMarkerProps = {
+    currentLocation?: Location,
+    onLocationSelect: (location: Location) => void;
+};
