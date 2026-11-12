@@ -1,7 +1,8 @@
 import { useFormContext } from 'react-hook-form';
 import type { HospitalFormInput } from '../schemas/hospital.schema';
 import LocationPicker from './LocationPicker';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import type { Location } from '../types/hospital.type';
 
 type HDetailsProps = {
     formManagement: {
@@ -29,9 +30,9 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
             : ""
         }`;
 
-    function handleLocationSelect(data: any) {
-        console.log(data);
-    }
+    const handleLocationSelect = useCallback((location: Location) => {
+        console.log(location);
+    }, []);
 
     function handleOpenMap() {
         setIsMapOpen(true);
@@ -44,9 +45,9 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
         });
     }
 
-    function handleCloseMap() {
+    const handleCloseMap = useCallback(() => {
         setIsMapOpen(false);
-    }
+    }, []);
 
     return (
         <div ref={ContainerRef} className="w-full relative flex flex-col gap-4 pb-6">

@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IconClose } from "../../../components/Icons";
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import {
     MapContainer,
     TileLayer,
     Marker,
-    useMapEvents
+    useMapEvents,
+    useMap
 } from 'react-leaflet';
-import L from 'leaflet';
+import L, { type LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { LocationMarkerProps, LocationPickerProps } from '../types/hospital.type';
+import 'leaflet-geosearch/dist/geosearch.css';
+import type {
+    LocationMarkerProps,
+    LocationPickerProps,
+    Location,
+    LocationSearchProps
+} from '../types/hospital.type';
 
 const hospitalMarkerIcon = L.divIcon({
     className: '',
@@ -31,22 +39,25 @@ const hospitalMarkerIcon = L.divIcon({
     iconAnchor: [20, 48],
 });
 
-
 function LocationMarker({
     onLocationSelect,
-    currentLocation
+    initialPosition,
+    setInitialPosition
 }: LocationMarkerProps) {
-    const [position, setPosition] = useState<[number, number] | null>(
-        currentLocation
-            ? [currentLocation.latitude, currentLocation.longitude]
-            : null
-    );
+
+    const position: LatLngTuple | null = initialPosition
+    ? [initialPosition.latitude, initialPosition.longitude]
+    : null;
 
     useMapEvents({
         click(e) {
             const { lat, lng } = e.latlng;
 
-            setPosition([lat, lng]);
+            const location: Location = {
+                latitude: lat,
+                longitude: lng
+            };
+            setInitialPosition(location);
 
             onLocationSelect({
                 latitude: lat,
@@ -58,15 +69,65 @@ function LocationMarker({
     return position ? <Marker icon={hospitalMarkerIcon} position={position} /> : null;
 }
 
+function LocationSearch({
+    onLocationSelect,
+    setInitialPosition
+}: LocationSearchProps) {
+
+    const map = useMap();
+
+    useEffect(() => {
+        const provider = new OpenStreetMapProvider();
+
+        const searchControl = new GeoSearchControl({
+            provider,
+            style: 'bar',
+            showMarker: false,
+            autoClose: true,
+            searchLabel: 'Search hospital location...',
+        });
+
+        function handleLocationSelect(result: any) {
+            const location: Location = {
+                latitude: result.location.y,
+                longitude: result.location.x
+            };
+
+            setInitialPosition(location);
+            onLocationSelect(location);
+        }
+
+        map.addControl(searchControl);
+
+        map.on('geosearch/showlocation', handleLocationSelect);
+
+        return () => {
+            map.off('geosearch/showlocation', handleLocationSelect);
+            map.removeControl(searchControl);
+        };
+
+    }, [map, onLocationSelect, setInitialPosition]);
+
+    return null;
+}
+
 function LocationPicker({
     onLocationSelect,
     currentLocation,
     onClose
 }: LocationPickerProps) {
+
+    const [initialPosition, setInitialPosition] = useState<Location>(
+        currentLocation ?? {
+            latitude: 11.2588,
+            longitude: 75.7804
+        }
+    );
+
     return (
-        <div className="w-full h-[400px] rounded-xl overflow-hidden">
+        <div className="relative w-full h-[400px] rounded-xl overflow-hidden">
             <MapContainer
-                center={[11.2588, 75.7804]}
+                center={[initialPosition.latitude, initialPosition.longitude]}
                 zoom={13}
                 scrollWheelZoom={true}
                 className="w-full h-full"
@@ -75,9 +136,9 @@ function LocationPicker({
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-
+                <LocationSearch {...{ onLocationSelect, setInitialPosition }} />
                 <LocationMarker
-                    {...{ onLocationSelect, currentLocation }}
+                    {...{ onLocationSelect, initialPosition, setInitialPosition }}
                 />
             </MapContainer>
             <button

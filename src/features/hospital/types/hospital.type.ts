@@ -34,6 +34,12 @@ export type LocationPickerProps = {
 };
 
 export type LocationMarkerProps = {
-    currentLocation?: Location,
+    initialPosition?: Location,
+    onLocationSelect: (location: Location) => void;
+    setInitialPosition: React.Dispatch<React.SetStateAction<Location>>;
+};
+
+export type LocationSearchProps = {
+    setInitialPosition: React.Dispatch<React.SetStateAction<Location>>;
     onLocationSelect: (location: Location) => void;
 };
