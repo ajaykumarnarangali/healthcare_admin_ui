@@ -32,7 +32,6 @@ function CreateHospitalPage() {
       toast.error(getApiErrorMessage(error));
       console.error("Failed to create hospital:", error);
     }
-
   }
 
 

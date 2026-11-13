@@ -7,14 +7,14 @@ type HospitalFormHeaderProps = {
     formManagement: {
         mode: "edit" | "create"
         isFormEditable?: boolean;
-        imageUrl?: string;
+        imageUrl?: string | null;
         setFormEditable?: React.Dispatch<React.SetStateAction<boolean>>;
         handleCancel?: () => void;
     };
 };
 function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
 
-    const { mode, isFormEditable, imageUrl, setFormEditable } = formManagement;
+    const { mode, isFormEditable, handleCancel, imageUrl, setFormEditable } = formManagement;
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const initialImage = imageUrl ?? "https://placehold.co/40x40";
 
@@ -29,13 +29,19 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
         name: "hospitalImage"
     });
     useEffect(() => {
-        if (!hospitalImage?.length) return;
+        if (!hospitalImage?.length) {
+            setPreviewUrl(null);
+            return;
+        }
 
-        const imageUrl = URL.createObjectURL(hospitalImage[0]);
-        setPreviewUrl(imageUrl);
+        const preview = URL.createObjectURL(hospitalImage[0]);
+        setPreviewUrl(preview);
 
-        return () => URL.revokeObjectURL(imageUrl);
-    }, [hospitalImage]);
+        return () => {
+            URL.revokeObjectURL(preview);
+            setPreviewUrl(null);
+        };
+    }, [hospitalImage, imageUrl]);
 
 
     return (
@@ -106,6 +112,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
                         <>
                             <button
                                 type="button"
+                                onClick={handleCancel}
                                 className="flex gap-2 text-[13px] text-text border rounded-lg border-[#E1E5EA] items-center px-4 py-[10px]"
                             >
                                 Cancel

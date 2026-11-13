@@ -11,15 +11,27 @@ import HospitalFormHeader from './HospitalFormHeader';
 import HospitalFormDetails from './HospitalFormDetails';
 
 
-interface HospitalFormProps {
-    mode: "create" | "edit";
-    initFormData: HospitalFormInput
-    handleFormSubmit: (data: any) => void;
-}
+type HospitalFormProps =
+    | {
+        mode: "create";
+        initFormData: HospitalFormInput;
+        initHospitalImageUrl?: string | null;
+        handleFormSubmit: (data: HospitalFormOutput) => void | Promise<void>;
+    }
+    | {
+        mode: "edit";
+        initFormData: HospitalFormInput;
+        initHospitalImageUrl?: string | null;
+        handleFormSubmit: (
+            data: HospitalFormOutput,
+            dirtyFields: Partial<Record<keyof HospitalFormOutput, boolean>>
+        ) => void | Promise<void>;
+    };
 
 function HospitalForm(props: HospitalFormProps) {
 
-    const { mode, initFormData, handleFormSubmit } = props;
+    const { mode, initFormData, handleFormSubmit, initHospitalImageUrl } = props;
+    const [imageUrl, setImageUrl] = useState(initHospitalImageUrl);
     const [isFormEditable, setFormEditable] = useState(mode === "create");
 
     const schema = getHospitalSchema(mode);
@@ -29,15 +41,23 @@ function HospitalForm(props: HospitalFormProps) {
     });
 
     function handleCancel() {
-
+        method.reset(initFormData);
+        setImageUrl(initHospitalImageUrl);
+        setFormEditable(false);
     }
+
+    const onSubmit = (data: HospitalFormOutput) => {
+        if (mode === "edit") {
+            return handleFormSubmit(data, method.formState.dirtyFields);
+        }
+        return handleFormSubmit(data);
+    };
 
     return (
         <div>
             <FormProvider {...method}>
                 <form
-                    onSubmit={method.handleSubmit(
-                        (data) => handleFormSubmit(data),
+                    onSubmit={method.handleSubmit(onSubmit,
                         (errors) => {
                             console.log("Validation errors:", errors);
                         }
@@ -48,6 +68,7 @@ function HospitalForm(props: HospitalFormProps) {
                             mode === "edit"
                                 ? {
                                     mode,
+                                    imageUrl,
                                     isFormEditable,
                                     setFormEditable,
                                     handleCancel,

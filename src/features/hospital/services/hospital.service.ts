@@ -9,3 +9,19 @@ export async function createHospital(data: FormData) {
 
     return response.data;
 }
+
+export async function updateHospital(data: FormData, hospitalId: string) {
+    const response = await api.patch(`/hospitals/${hospitalId}`, data, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+
+    return response.data;
+}
+
+export async function getHospital(hospitalId: string) {
+    const response = await api.get(`/hospitals/${hospitalId}`);
+
+    return response.data;
+}

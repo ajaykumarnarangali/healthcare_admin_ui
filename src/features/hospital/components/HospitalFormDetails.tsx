@@ -1,5 +1,6 @@
 import { useFormContext } from 'react-hook-form';
 import type { HospitalFormInput } from '../schemas/hospital.schema';
+import { IconMapPin } from "../../../components/Icons";
 import LocationPicker from './LocationPicker';
 import { useCallback, useRef, useState } from 'react';
 import type { Location } from '../types/hospital.type';
@@ -14,8 +15,12 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
     const {
         register: registerField,
         formState: { errors },
-        setValue
+        setValue,
+        getValues
     } = useFormContext<HospitalFormInput>();
+
+    const latitude = getValues("latitude");
+    const longitude = getValues("longitude");
 
     const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
     const ContainerRef = useRef<HTMLDivElement>(null);
@@ -323,6 +328,15 @@ function HospitalFormDetails({ formManagement }: HDetailsProps) {
                     >
                         Pick Hospital Location
                     </button>
+                    {latitude && longitude && (
+                        <div className="text-xs text-text-muted bg-slate-50 rounded-lg p-3">
+                            <p className="font-semibold text-slate-700 flex items-center gap-1 mb-1">
+                                <IconMapPin size={16}/> Selected Location
+                            </p>
+                            <p>Latitude: {latitude}</p>
+                            <p>Longitude: {longitude}</p>
+                        </div>
+                    )}
                 </div>
                 {isMapOpen && (
                     <div className="absolute inset-0 z-50">
