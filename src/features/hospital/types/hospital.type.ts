@@ -5,6 +5,16 @@ export type StatusOption = {
     value: HospitalStatus;
 };
 
+export type SortByOptions = {
+    label: string;
+    value: "created_at" | "name" | "city";
+}
+
+export type SortOrderOptions = {
+    label: string;
+    value: "ASC" | "DESC";
+};
+
 export type LimitOption = {
     label: string;
     value: number;
@@ -43,3 +53,12 @@ export type LocationSearchProps = {
     setInitialPosition: React.Dispatch<React.SetStateAction<Location>>;
     onLocationSelect: (location: Location) => void;
 };
+
+export interface HospitalQueryParams {
+    page: number;
+    limit: number;
+    search?: string;
+    status: "ALL" | "ACTIVE" | "INACTIVE";
+    sortBy: "name" | "city" | "created_at";
+    sortOrder: "ASC" | "DESC";
+}

@@ -1,18 +1,18 @@
 import HospitalTable from "../components/HospitalTable";
 import HospitalFilter from "../components/HospitalFilter";
 import HospitalPageHeader from "../components/HospitalPageHeader";
-import { useHospital } from "../hooks/useHospital";
+import { useGetHospitalQuery } from "../hooks/useGetHospitalsQuery";
 
 function HospitalManagement() {
 
-    const { hospitals } = useHospital();
+    const { query, setQuery } = useGetHospitalQuery();
 
     return (
         <div className="p-4 lg:p-6 w-full h-full">
-            <HospitalPageHeader
+            {/* <HospitalPageHeader
                 headerProps={{ totalCount: hospitals.length }}
-            />
-            <HospitalFilter />
+            /> */}
+            <HospitalFilter {...{ query, setQuery }} />
             <HospitalTable />
         </div>
     )

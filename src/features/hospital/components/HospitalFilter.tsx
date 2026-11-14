@@ -1,16 +1,55 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IconSearch } from "../../../components/Icons";
-import type { HospitalStatus, StatusOption, LimitOption } from "../types/hospital.type";
+import type {
+    HospitalStatus,
+    StatusOption,
+    LimitOption,
+    HospitalQueryParams,
+    SortByOptions,
+    SortOrderOptions
+} from "../types/hospital.type";
 
-function HospitalFilter() {
-    const [status, setStatus] = useState<HospitalStatus>("ALL");
+interface HospitalFilterProps {
+    query: HospitalQueryParams;
+    setQuery: React.Dispatch<React.SetStateAction<HospitalQueryParams>>;
+}
+
+function HospitalFilter(filterData: HospitalFilterProps) {
+    const { query, setQuery } = filterData;
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [limit, setLimit] = useState<number>(10);
+    const isInitialRender = useRef<boolean>(true);
+
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+        const timeoutRef = setTimeout(() => {
+            setQuery(prev => ({
+                ...prev,
+                search: searchTerm,
+                page: 1
+            }));
+        }, 500);
+
+        return () => clearTimeout(timeoutRef);
+    }, [searchTerm, setQuery]);
 
     const statusOptions: StatusOption[] = [
         { label: "All Status", value: "ALL" },
         { label: "Active", value: "ACTIVE" },
         { label: "Inactive", value: "INACTIVE" },
+    ];
+
+    const sortByOptions: SortByOptions[] = [
+        { value: "created_at", label: "Date Created" },
+        { value: "name", label: "Hospital Name" },
+        { value: "city", label: "City" },
+    ]
+
+    const sortOrderOptions: SortOrderOptions[] = [
+        { value: "DESC", label: "Descending" },
+        { value: "ASC", label: "Ascending" },
     ];
 
     const limitOptions: LimitOption[] = [
@@ -28,26 +67,36 @@ function HospitalFilter() {
 
     return (
         <div className="w-full py-3">
-            <div className="flex gap-3 justify-between">
-                <div className="relative w-full max-w-xs">
-                    <IconSearch className="absolute w-4 h-4 left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <div className="flex items-center justify-between gap-3">
 
-                    <input
-                        className="h-9 w-full pl-9 pr-3 border rounded-md outline-none
-                        focus:outline-none focus:ring-0 focus:border-slate-300 text-slate-400 
-                        text-xs bg-transparent border-slate-300 placeholder:text-sm"
-                        placeholder="Search hospitals..."
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+                {/* Search and Filters */}
+                <div className="flex items-center gap-3 flex-1">
 
-                <div className="flex gap-3">
+                    {/* Search */}
+                    <div className="relative w-full max-w-xs">
+                        <IconSearch className="absolute w-4 h-4 left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                            className="h-9 w-full pl-9 pr-3 border rounded-md outline-none
+                            focus:ring-0 focus:border-slate-300 text-slate-400
+                            text-xs bg-transparent border-slate-300 placeholder:text-sm"
+                            placeholder="Search hospitals..."
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Status */}
                     <select
                         className={selectClassName}
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as HospitalStatus)}
+                        value={query.status}
+                        onChange={(e) =>
+                            setQuery({
+                                ...query,
+                                status: e.target.value as HospitalStatus,
+                                page: 1
+                            })
+                        }
                     >
                         {statusOptions.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -56,10 +105,57 @@ function HospitalFilter() {
                         ))}
                     </select>
 
+                    {/* Sort By */}
                     <select
                         className={selectClassName}
-                        value={limit}
-                        onChange={(e) => setLimit(Number(e.target.value))}
+                        value={query.sortBy}
+                        onChange={(e) =>
+                            setQuery({
+                                ...query,
+                                sortBy: e.target.value as HospitalQueryParams["sortBy"],
+                                page: 1,
+                            })
+                        }
+                    >
+                        {sortByOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+
+                    </select>
+                </div>
+
+                {/* Sorting Order and Pagination Size */}
+                <div className="flex items-center gap-3 shrink-0">
+                    <select
+                        className={selectClassName}
+                        value={query.sortOrder}
+                        onChange={(e) =>
+                            setQuery({
+                                ...query,
+                                sortOrder: e.target.value as HospitalQueryParams["sortOrder"],
+                                page: 1,
+                            })
+                        }
+                    >
+                        {sortOrderOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        className={selectClassName}
+                        value={query.limit}
+                        onChange={(e) =>
+                            setQuery({
+                                ...query,
+                                limit: Number(e.target.value),
+                                page: 1
+                            })
+                        }
                     >
                         {limitOptions.map((option) => (
                             <option key={option.value} value={option.value}>
