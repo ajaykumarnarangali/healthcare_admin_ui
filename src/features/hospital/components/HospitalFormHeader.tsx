@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { HospitalFormInput } from '../schemas/hospital.schema';
+import { usePermission } from '../../../hooks/usePermission';
+import { GLOBAL_ADMIN_PERMISSIONS } from '../../../constants/permissions';
 
 
 type HospitalFormHeaderProps = {
@@ -17,6 +19,9 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
     const { mode, isFormEditable, handleCancel, imageUrl, setFormEditable } = formManagement;
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const initialImage = imageUrl ?? "https://placehold.co/40x40";
+
+    const { hasPermission } = usePermission();
+    const canManageHospital = hasPermission(GLOBAL_ADMIN_PERMISSIONS.HOSPITAL.MANAGE);
 
     const {
         register: registerField,
@@ -95,7 +100,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
 
             <div className="flex gap-2">
                 {
-                    mode === "create" && (
+                    mode === "create" && canManageHospital && (
                         <button
                             type="submit"
                             className="flex gap-2 text-[13px] font-semibold text-primary border
@@ -108,7 +113,7 @@ function HospitalFormHeader({ formManagement }: HospitalFormHeaderProps) {
                     )
                 }
                 {
-                    mode === "edit" && (isFormEditable ? (
+                    mode === "edit" && canManageHospital && (isFormEditable ? (
                         <>
                             <button
                                 type="button"

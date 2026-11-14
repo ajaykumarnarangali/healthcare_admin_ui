@@ -278,5 +278,5 @@ export function getPermittedSidebarGroups(role: Role) {
         return result;
     }, []);
 
-    return initialSidebarData;
+    return permittedSideBarGroups;
 }
