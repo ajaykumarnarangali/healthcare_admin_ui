@@ -19,8 +19,15 @@ function HospitalPageHeader({ headerProps }: HospitalPageHeaderProps) {
         <div className="w-full flex flex-col gap-3 md:flex-row justify-between md:items-center">
             <div>
                 <h1 className="text-xl font-semibold text-foreground">Hospitals</h1>
-                <p className="text-sm text-muted-foreground">
-                    {totalCount === undefined ? "Loading..." : `${totalCount} hospitals on the platform`}
+                <p className="text-xs text-muted-foreground">
+                    {totalCount === undefined ? (
+                        "Loading..."
+                    ) : (
+                        <>
+                            <span className="font-semibold text-slate-700">{totalCount}</span>
+                            {" hospitals on the platform"}
+                        </>
+                    )}
                 </p>
             </div>
             <div>

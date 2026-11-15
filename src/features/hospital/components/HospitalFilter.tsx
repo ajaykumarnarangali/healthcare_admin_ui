@@ -60,9 +60,9 @@ function HospitalFilter(filterData: HospitalFilterProps) {
     ];
 
     const selectClassName = `
-        h-9 w-full px-3 max-w-28 border text-nowrap rounded-md
+        h-9 w-full px-3 max-w-28 border text-nowrap rounded-md text-[12px]
         outline-none focus:outline-none focus:ring-0 focus:border-slate-300
-        text-sm bg-transparent text-slate-400 border-slate-300
+        bg-transparent text-slate-400 border-slate-300 cursor-pointer
     `;
 
     return (
@@ -78,7 +78,7 @@ function HospitalFilter(filterData: HospitalFilterProps) {
                         <input
                             className="h-9 w-full pl-9 pr-3 border rounded-md outline-none
                             focus:ring-0 focus:border-slate-300 text-slate-400
-                            text-xs bg-transparent border-slate-300 placeholder:text-sm"
+                            text-xs bg-transparent border-slate-300 placeholder:text-[11px]"
                             placeholder="Search hospitals..."
                             type="text"
                             value={searchTerm}

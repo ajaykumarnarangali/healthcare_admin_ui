@@ -145,13 +145,13 @@ function HospitalTable({
                             <span>Showing 0 of 0 hospitals</span>
                         ) : (
                             <span>
-                                Showing {((pagination?.currentPage ?? 1) - 1) *
-                                    (pagination?.limit ?? 10) + 1}
-                                –{Math.min(
-                                    (pagination?.currentPage ?? 1) * (pagination?.limit ?? 10),
-                                    pagination?.totalQueryMatchRecords ?? 0
-                                )} of {pagination?.totalQueryMatchRecords}
-                                <span className="font-semibold text-slate-700">{pagination?.totalQueryMatchRecords}</span>
+                                Showing
+                                <span className="font-semibold mx-1  text-slate-700">
+                                    {((pagination?.currentPage ?? 1) - 1) *
+                                        (pagination?.limit ?? 10) + 1} – {(pagination?.currentPage ?? 1) * (pagination?.limit ?? 10)}
+                                </span>
+                                of
+                                <span className="font-semibold mx-1 text-slate-700">{pagination?.totalQueryMatchRecords}</span>
                                 hospitals
                             </span>
                         )}
