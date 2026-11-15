@@ -1,21 +1,49 @@
-import type { Hospital, Pagination } from "../types/hospital.type";
+import type { Hospital, HospitalQueryParams, Pagination } from "../types/hospital.type";
 import { IconChevronLeft, IconChevronRight, IconEdit, IconEye } from "../../../components/Icons";
 import PageStateHandler from "../../../components/PageStateHandler";
 import { Link } from "react-router-dom";
+import { generatePageButtons } from "../utils/pagination.utils";
 
 type HospitalTableProps = {
     hospitals: Hospital[];
     isFetching: boolean
     fetchError: string | null
-    pagination: Pagination | null
+    pagination: Pagination | null,
+    setQuery: React.Dispatch<React.SetStateAction<HospitalQueryParams>>;
 };
 function HospitalTable({
     hospitals,
     pagination,
     isFetching,
-    fetchError
+    fetchError,
+    setQuery
 }: HospitalTableProps
 ) {
+
+    function handlePageClick(page: { page: number | string; isClickable: boolean }) {
+        const currentPage = page.page;
+
+        if (
+            page.isClickable &&
+            typeof currentPage === "number" &&
+            currentPage >= 1 &&
+            currentPage <= (pagination?.totalPages ?? 0)
+        ) {
+            setQuery((prev) => ({
+                ...prev,
+                page: currentPage
+            }));
+        }
+    }
+
+    function handlePageNavigation(direction: "next" | "previous") {
+        setQuery((prev) => ({
+            ...prev,
+            page: direction === "next"
+                ? Math.min(prev.page + 1, pagination?.totalPages ?? prev.page)
+                : Math.max(prev.page - 1, 1)
+        }));
+    }
 
     return (
         <div className="w-full overflow-x-auto py-6">
@@ -139,74 +167,66 @@ function HospitalTable({
                 </table>
 
                 {/* Pagination */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-4 bg-white border border-t-0 border-slate-300">
-                    <p className="text-xs text-slate-500">
-                        {pagination?.totalQueryMatchRecords === 0 ? (
-                            <span>Showing 0 of 0 hospitals</span>
-                        ) : (
-                            <span>
-                                Showing
-                                <span className="font-semibold mx-1  text-slate-700">
-                                    {((pagination?.currentPage ?? 1) - 1) *
-                                        (pagination?.limit ?? 10) + 1} – {(pagination?.currentPage ?? 1) * (pagination?.limit ?? 10)}
-                                </span>
-                                of
-                                <span className="font-semibold mx-1 text-slate-700">{pagination?.totalQueryMatchRecords}</span>
-                                hospitals
-                            </span>
-                        )}
-                    </p>
-                    {
-                        (pagination?.totalQueryMatchRecords ?? 0) && (
-                            <div className="flex items-center gap-1">
-                                <button
-                                    type="button"
-                                    disabled
-                                    className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-400 disabled:opacity-50"
-                                >
-                                    <IconChevronLeft />
-                                </button>
+                {
+                    pagination?.totalPages && (
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-4 bg-white border border-t-0 border-slate-300">
+                            <p className="text-xs text-slate-500">
+                                {pagination?.totalQueryMatchRecords === 0 ? (
+                                    <span>Showing 0 of 0 hospitals</span>
+                                ) : (
+                                    <span>
+                                        Showing
+                                        <span className="font-semibold mx-1  text-slate-700">
+                                            {((pagination?.currentPage ?? 1) - 1) *
+                                                (pagination?.limit ?? 10) + 1} – {(pagination?.currentPage ?? 1) * (pagination?.limit ?? 10)}
+                                        </span>
+                                        of
+                                        <span className="font-semibold mx-1 text-slate-700">{pagination?.totalQueryMatchRecords}</span>
+                                        hospitals
+                                    </span>
+                                )}
+                            </p>
+                            {
+                                (pagination?.totalQueryMatchRecords ?? 0) && (
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => handlePageNavigation("previous")}
+                                            disabled={(pagination?.currentPage ?? 1) === 1}
+                                            className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"                                        >
+                                            <IconChevronLeft />
+                                        </button>
 
-                                <button
-                                    type="button"
-                                    className="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-white text-xs font-semibold"
-                                >
-                                    1
-                                </button>
+                                        {
+                                            generatePageButtons(pagination.totalPages ?? 1, pagination.currentPage ?? 1).map((page) => (
+                                                <button
+                                                    key={page.id}
+                                                    onClick={() => handlePageClick(page)}
+                                                    type="button"
+                                                    className={`w-8 h-8 flex items-center justify-center rounded-md border text-xs
+                                                            ${page.page === pagination.currentPage
+                                                            ? "bg-primary text-white border-primary font-semibold"
+                                                            : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                                                        }`}                                                >
+                                                    {page.page}
+                                                </button>
+                                            ))
+                                        }
 
-                                <button
-                                    type="button"
-                                    className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 text-xs hover:bg-slate-50"
-                                >
-                                    2
-                                </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handlePageNavigation("next")}
+                                            disabled={(pagination?.currentPage ?? 1) === (pagination.totalPages ?? 1)}
+                                            className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"                                        >
+                                            <IconChevronRight />
+                                        </button>
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )
+                }
 
-                                <button
-                                    type="button"
-                                    className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 text-xs hover:bg-slate-50"
-                                >
-                                    3
-                                </button>
-
-                                <span className="px-1 text-xs text-slate-400">...</span>
-
-                                <button
-                                    type="button"
-                                    className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 text-xs hover:bg-slate-50"
-                                >
-                                    10
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50"
-                                >
-                                    <IconChevronRight />
-                                </button>
-                            </div>
-                        )
-                    }
-                </div>
             </PageStateHandler>
         </div>
     );

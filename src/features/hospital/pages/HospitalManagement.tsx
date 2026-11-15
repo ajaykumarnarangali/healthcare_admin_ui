@@ -21,7 +21,7 @@ function HospitalManagement() {
             />
             <HospitalFilter {...{ query, setQuery }} />
             <HospitalTable
-                {...{ hospitals, pagination, isFetching, fetchError }}
+                {...{ hospitals, pagination, isFetching, fetchError, setQuery }}
             />
         </div>
     )
