@@ -6,7 +6,7 @@ import { GLOBAL_ADMIN_PERMISSIONS } from "../../../constants/permissions";
 
 interface HospitalPageHeaderProps {
     headerProps: {
-        totalCount: number;
+        totalCount?: number;
     };
 }
 function HospitalPageHeader({ headerProps }: HospitalPageHeaderProps) {
@@ -19,7 +19,9 @@ function HospitalPageHeader({ headerProps }: HospitalPageHeaderProps) {
         <div className="w-full flex flex-col gap-3 md:flex-row justify-between md:items-center">
             <div>
                 <h1 className="text-xl font-semibold text-foreground">Hospitals</h1>
-                <p className="text-sm text-muted-foreground">{totalCount} hospitals on the platform</p>
+                <p className="text-sm text-muted-foreground">
+                    {totalCount === undefined ? "Loading..." : `${totalCount} hospitals on the platform`}
+                </p>
             </div>
             <div>
                 {

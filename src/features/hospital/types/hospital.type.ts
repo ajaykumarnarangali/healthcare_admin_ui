@@ -23,14 +23,16 @@ export type LimitOption = {
 export type Hospital = {
     id: string;
     name: string;
-    adminEmail: string;
-    location: string;
+    email?: string;
+    city: string,
+    state: string,
+    country: string,
     status: "ACTIVE" | "INACTIVE";
-    departments: number;
-    doctors: number;
-    admins: number;
+    departments?: number;
+    doctors?: number;
+    admins?: number;
     createdAt: string;
-}
+};
 
 export type Location = {
     latitude: number;
@@ -62,3 +64,11 @@ export interface HospitalQueryParams {
     sortBy: "name" | "city" | "created_at";
     sortOrder: "ASC" | "DESC";
 }
+
+export type Pagination = {
+    totalRecords: number;
+    totalQueryMatchRecords: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+};

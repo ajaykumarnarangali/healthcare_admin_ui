@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { HospitalQueryParams } from "../types/hospital.type";
+import * as HospitalService from "../services/hospital.service";
+import type {
+    Hospital,
+    HospitalQueryParams,
+    Pagination
+} from "../types/hospital.type";
+import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
 
 
 export function useGetHospitalQuery() {
@@ -49,10 +55,45 @@ export function useGetHospitalQuery() {
         setSearchParams(params);
     }, [query, setSearchParams]);
 
+    const [pagination, setPagination] = useState<Pagination | null>(null);
+    const [isFetching, setIsFetching] = useState<boolean>(true);
+    const [fetchError, setFetchError] = useState<string | null>(null);
+    const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
+    async function getHospitalByQuery() {
+        setIsFetching(true);
+        setFetchError(null);
+        try {
+            const res = await HospitalService.getHospitalsByQuery(query);
+            if (!res.success) {
+                setFetchError("Unable to fetch hospitals");
+                setHospitals([]);
+                setPagination(null);
+                return;
+            }
+            if (res.data && res.data.hospitals && res.data.pagination) {
+                const { hospitals, pagination } = res.data;
+                setHospitals(hospitals);
+                setPagination(pagination);
+            }
+
+        } catch (error) {
+            setFetchError(getApiErrorMessage(error));
+        } finally {
+            setIsFetching(false);
+        }
+    }
+
+    useEffect(() => {
+        getHospitalByQuery();
+    }, [query]);
 
     return {
         query,
-        setQuery
+        setQuery,
+        hospitals,
+        pagination,
+        isFetching,
+        fetchError
     }
 }

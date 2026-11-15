@@ -1,4 +1,5 @@
 import { api } from "../../../services/api";
+import type { HospitalQueryParams } from "../types/hospital.type";
 
 export async function createHospital(data: FormData) {
     const response = await api.post("/hospitals", data, {
@@ -23,5 +24,12 @@ export async function updateHospital(data: FormData, hospitalId: string) {
 export async function getHospital(hospitalId: string) {
     const response = await api.get(`/hospitals/${hospitalId}`);
 
+    return response.data;
+}
+
+export async function getHospitalsByQuery(query: HospitalQueryParams) {
+    const response = await api.get("/hospitals/admin/list", {
+        params: query,
+    });
     return response.data;
 }

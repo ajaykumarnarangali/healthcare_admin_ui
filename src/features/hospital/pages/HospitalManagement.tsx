@@ -5,15 +5,24 @@ import { useGetHospitalQuery } from "../hooks/useGetHospitalsQuery";
 
 function HospitalManagement() {
 
-    const { query, setQuery } = useGetHospitalQuery();
+    const {
+        query,
+        setQuery,
+        pagination,
+        hospitals,
+        isFetching,
+        fetchError
+    } = useGetHospitalQuery();
 
     return (
         <div className="p-4 lg:p-6 w-full h-full">
-            {/* <HospitalPageHeader
-                headerProps={{ totalCount: hospitals.length }}
-            /> */}
+            <HospitalPageHeader
+                headerProps={{ totalCount: pagination?.totalRecords }}
+            />
             <HospitalFilter {...{ query, setQuery }} />
-            <HospitalTable />
+            <HospitalTable
+                {...{ hospitals, pagination, isFetching, fetchError }}
+            />
         </div>
     )
 }
