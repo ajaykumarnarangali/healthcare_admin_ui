@@ -40,6 +40,7 @@ export type LimitOption = {
 export interface UserQueryParams {
     page: number;
     limit: number;
+    role: ManagedUserRole
     search?: string;
     status: "ALL" | "ACTIVE" | "INACTIVE";
     sortOrder: "ASC" | "DESC";

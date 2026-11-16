@@ -1,11 +1,31 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IconSearch } from '../../../components/Icons';
-import type { LimitOption, SortOrderOptions, StatusOption } from '../types/user.type';
+import type { LimitOption, ManagedUserFilterStatus, SortOrderOptions, StatusOption, UserQueryParams } from '../types/user.type';
 
-function UserFilter() {
+interface UserFilterProps {
+  query: UserQueryParams;
+  setQuery: React.Dispatch<React.SetStateAction<UserQueryParams>>;
+}
+function UserFilter({ query, setQuery }: UserFilterProps) {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const isInitialRender = useRef<boolean>(true);
+
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    const timeoutRef = setTimeout(() => {
+      setQuery(prev => ({
+        ...prev,
+        search: searchTerm,
+        page: 1
+      }));
+    }, 500);
+
+    return () => clearTimeout(timeoutRef);
+  }, [searchTerm, setQuery]);
 
   const statusOptions: StatusOption[] = [
     { label: "All Status", value: "ALL" },
@@ -45,7 +65,7 @@ function UserFilter() {
               className="h-9 w-full pl-9 pr-3 border rounded-md outline-none
                                focus:ring-0 focus:border-slate-300 text-slate-400
                                text-xs bg-transparent border-slate-300 placeholder:text-[11px]"
-              placeholder="Search hospitals..."
+              placeholder="Search users..."
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -55,14 +75,14 @@ function UserFilter() {
           {/* Status */}
           <select
             className={selectClassName}
-            // value={query.status}
-            // onChange={(e) =>
-            //   setQuery({
-            //     ...query,
-            //     status: e.target.value as HospitalStatus,
-            //     page: 1
-            //   })
-            // }
+            value={query.status}
+            onChange={(e) =>
+              setQuery({
+                ...query,
+                status: e.target.value as ManagedUserFilterStatus,
+                page: 1
+              })
+            }
           >
             {statusOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -76,14 +96,14 @@ function UserFilter() {
         <div className="flex items-center gap-3 shrink-0">
           <select
             className={selectClassName}
-            // value={query.sortOrder}
-            // onChange={(e) =>
-            //   setQuery({
-            //     ...query,
-            //     sortOrder: e.target.value as HospitalQueryParams["sortOrder"],
-            //     page: 1,
-            //   })
-            // }
+            value={query.sortOrder}
+            onChange={(e) =>
+              setQuery({
+                ...query,
+                sortOrder: e.target.value as UserQueryParams["sortOrder"],
+                page: 1,
+              })
+            }
           >
             {sortOrderOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -94,14 +114,14 @@ function UserFilter() {
 
           <select
             className={selectClassName}
-            // value={query.limit}
-            // onChange={(e) =>
-            //   setQuery({
-            //     ...query,
-            //     limit: Number(e.target.value),
-            //     page: 1
-            //   })
-            // }
+            value={query.limit}
+            onChange={(e) =>
+              setQuery({
+                ...query,
+                limit: Number(e.target.value),
+                page: 1
+              })
+            }
           >
             {limitOptions.map((option) => (
               <option key={option.value} value={option.value}>
