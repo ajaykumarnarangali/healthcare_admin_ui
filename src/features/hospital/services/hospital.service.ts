@@ -27,9 +27,10 @@ export async function getHospital(hospitalId: string) {
     return response.data;
 }
 
-export async function getHospitalsByQuery(query: HospitalQueryParams) {
+export async function getHospitalsByQuery(query: HospitalQueryParams, signal: AbortSignal) {
     const response = await api.get("/hospitals/admin/list", {
         params: query,
+        signal
     });
     return response.data;
 }

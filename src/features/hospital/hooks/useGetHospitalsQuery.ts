@@ -60,11 +60,11 @@ export function useGetHospitalQuery() {
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
-    async function getHospitalByQuery() {
+    async function getHospitalByQuery(signal: AbortSignal) {
         setIsFetching(true);
         setFetchError(null);
         try {
-            const res = await HospitalService.getHospitalsByQuery(query);
+            const res = await HospitalService.getHospitalsByQuery(query, signal);
             if (!res.success) {
                 setFetchError("Unable to fetch hospitals");
                 setHospitals([]);
@@ -85,7 +85,10 @@ export function useGetHospitalQuery() {
     }
 
     useEffect(() => {
-        getHospitalByQuery();
+        const controller = new AbortController();
+        getHospitalByQuery(controller.signal);
+
+        return () => controller.abort();
     }, [query]);
 
     return {
