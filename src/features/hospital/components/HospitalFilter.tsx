@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { IconSearch } from "../../../components/Icons";
 import type {
     HospitalStatus,
@@ -17,19 +17,20 @@ interface HospitalFilterProps {
 function HospitalFilter(filterData: HospitalFilterProps) {
     const { query, setQuery } = filterData;
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const isInitialRender = useRef<boolean>(true);
 
     useEffect(() => {
-        if (isInitialRender.current) {
-            isInitialRender.current = false;
-            return;
-        }
         const timeoutRef = setTimeout(() => {
-            setQuery(prev => ({
-                ...prev,
-                search: searchTerm,
-                page: 1
-            }));
+            setQuery(prev => {
+                if (prev.search === searchTerm && prev.page === 1) {
+                    return prev;
+                }
+
+                return {
+                    ...prev,
+                    search: searchTerm,
+                    page: 1
+                };
+            });
         }, 500);
 
         return () => clearTimeout(timeoutRef);

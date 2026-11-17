@@ -26,7 +26,7 @@ function PatientManagement() {
         headerProps={{ title, content, role }}
       />
       <UserFilter {...{ query, setQuery }} />
-      <PatientTables {...{ patients: users as Patient[] }} />
+      <PatientTables {...{ patients: users as Patient[], isFetching, fetchError, pagination, setQuery }} />
     </div>
   )
 }

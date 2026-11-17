@@ -18,15 +18,15 @@ function DoctorManagement() {
     isFetching,
     fetchError,
     users
-  } = useGetUsersQuery("DOCTOR");
+  } = useGetUsersQuery(role);
 
   return (
-    <div className="p-4 lg:p-6 w-full h-full">
+    <div key={role} className="p-4 lg:p-6 w-full h-full">
       <UserPageHeader
         headerProps={{ title, content, role }}
       />
       <UserFilter {...{ query, setQuery }} />
-      <DoctorsTables {...{ doctors: users as Doctor[] }} />
+      <DoctorsTables {...{ doctors: users as Doctor[], isFetching, fetchError, pagination, setQuery }} />
     </div>
   )
 }

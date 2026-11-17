@@ -78,7 +78,7 @@ api.interceptors.response.use(
                 throw new Error("Invalid refresh response");
             }
 
-            store.dispatch(setAccessToken(newToken));
+            store.dispatch(setAccessToken({ accessToken: newToken }));
         } catch (err) {
             if (
                 axios.isAxiosError(err) &&

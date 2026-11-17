@@ -1,4 +1,5 @@
 import { api } from "../../../services/api";
+import type { UserQueryParams } from "../types/user.type";
 
 export async function getUserProfile() {
     const response = await api.get("/user/profile");
@@ -22,5 +23,14 @@ export async function updateUserProfile(data: FormData) {
         },
     });
 
+    return response.data;
+}
+
+
+export async function getUsersByQuery(query: UserQueryParams, signal: AbortSignal) {
+    const response = await api.get("/user/", {
+        params: query,
+        signal
+    });
     return response.data;
 }

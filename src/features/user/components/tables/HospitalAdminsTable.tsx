@@ -1,126 +1,212 @@
 import { Link } from "react-router-dom";
-import { IconEdit, IconEye } from "../../../../components/Icons";
-import type { HospitalAdmin } from "../../types/user.type";
-
-
+import { IconChevronLeft, IconChevronRight, IconEdit, IconEye } from "../../../../components/Icons";
+import type { HospitalAdmin, Pagination, UserQueryParams } from "../../types/user.type";
+import { generatePageButtons } from "../../../hospital/utils/pagination.utils";
+import PageStateHandler from "../../../../components/PageStateHandler";
 
 type HospitalTableProps = {
   hospitalAdmins: HospitalAdmin[];
-  // isFetching: boolean
-  // fetchError: string | null
-  // pagination: Pagination | null,
-  // setQuery: React.Dispatch<React.SetStateAction<UserQueryParams>>;
+  isFetching: boolean
+  fetchError: string | null
+  pagination: Pagination | null,
+  setQuery: React.Dispatch<React.SetStateAction<UserQueryParams>>;
 };
-function HospitalAdminsTable({ hospitalAdmins }: HospitalTableProps) {
+function HospitalAdminsTable({ hospitalAdmins, isFetching, fetchError, pagination, setQuery }: HospitalTableProps) {
+  function handlePageClick(page: { page: number | string; isClickable: boolean }) {
+    const currentPage = page.page;
+
+    if (
+      page.isClickable &&
+      typeof currentPage === "number" &&
+      currentPage >= 1 &&
+      currentPage <= (pagination?.totalPages ?? 0)
+    ) {
+      setQuery((prev) => ({
+        ...prev,
+        page: currentPage
+      }));
+    }
+  }
+
+  function handlePageNavigation(direction: "next" | "previous") {
+    setQuery((prev) => ({
+      ...prev,
+      page: direction === "next"
+        ? Math.min(prev.page + 1, pagination?.totalPages ?? prev.page)
+        : Math.max(prev.page - 1, 1)
+    }));
+  }
+
   return (
     <div className="w-full overflow-x-auto py-6">
-      <table className="w-full min-w-[900px] text-left border-slate-300 border">
-        <thead>
-          <tr className="border-b border-slate-200">
-            <th className="px-4 py-4 text-xs font-semibold text-slate-600">
-              Admin Name
-            </th>
-            <th className="px-4 py-4 text-xs font-semibold text-slate-600">
-              contact
-            </th>
-            <th className="px-4 py-4 text-xs font-semibold text-slate-600">
-              Assigned Hospital
-            </th>
-            <th className="px-4 py-4 text-xs font-semibold text-slate-600 text-center">
-              Profile
-            </th>
-            <th className="px-4 py-4 text-xs font-semibold text-slate-600 text-center">
-              Status
-            </th>
-            <th className="px-4 py-4 text-xs font-semibold text-slate-600 text-center">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {hospitalAdmins.length === 0 ? (
-            <tr>
-              <td colSpan={6} className="px-4 py-12 text-center">
-                <p className="text-sm font-medium text-slate-600">
-                  No Doctors found
-                </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  Try adjusting your search or filters.
-                </p>
-              </td>
+      <PageStateHandler isLoading={isFetching} error={fetchError}>
+        <table className="w-full min-w-[900px] text-left border-slate-300 border">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="px-4 py-4 text-xs font-semibold text-slate-600">
+                Admin Name
+              </th>
+              <th className="px-4 py-4 text-xs font-semibold text-slate-600">
+                contact
+              </th>
+              <th className="px-4 py-4 text-xs font-semibold text-slate-600">
+                Assigned Hospital
+              </th>
+              <th className="px-4 py-4 text-xs font-semibold text-slate-600 text-center">
+                Profile
+              </th>
+              <th className="px-4 py-4 text-xs font-semibold text-slate-600 text-center">
+                Status
+              </th>
+              <th className="px-4 py-4 text-xs font-semibold text-slate-600 text-center">
+                Actions
+              </th>
             </tr>
-          ) : (
-            hospitalAdmins.map((hospitalAdmin) => (
-              <tr
-                key={hospitalAdmin.id}
-                className="border-b border-slate-200 bg-white hover:bg-slate-50/70 transition-colors"
-              >
-                <td className="px-4 py-4 flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-slate-800">
-                    {`${hospitalAdmin.firstName ?? ""} ${hospitalAdmin.lastName ?? ""}`.trim() || "-"}
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    {hospitalAdmin.email}
-                  </span>
-                </td>
-
-                <td className="px-4 py-4 text-xs text-slate-600 whitespace-nowrap">
-                  {hospitalAdmin.phone || "-"}
-                </td>
-
-                <td className="px-4 py-4 text-xs text-slate-600 whitespace-nowrap">
-                  {hospitalAdmin.assignedHospital || "-"}
-                </td>
-
-                <td className="px-4 py-4 text-xs text-slate-600 text-center">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold ${hospitalAdmin.isProfileCompleted
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "bg-red-50 text-red-600"
-                      }`}
-                  >
-                    {hospitalAdmin.isProfileCompleted ? "Completed" : "Not Completed"}
-                  </span>
-                </td>
-
-                <td className="px-4 py-4 text-center">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold ${hospitalAdmin.status === "ACTIVE"
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "bg-red-50 text-red-600"
-                      }`}
-                  >
-                    {hospitalAdmin.status === "ACTIVE"
-                      ? "Active"
-                      : hospitalAdmin.status === "INACTIVE"
-                        ? "Inactive"
-                        : "-"}
-                  </span>
-                </td>
-
-                <td className="px-4 py-4">
-                  <div className="flex items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      title="View Hospital"
-                      className="p-2 rounded-md text-primary hover:bg-[#e8edf4] transition-colors"
-                    >
-                      <IconEye className="w-3 h-3 hover:text-[#0d7490]" />
-                    </button>
-
-                    <Link
-                      to={`/global-admin/hospitals/${hospitalAdmin?.id}/edit`}
-                      className="p-2 rounded-md text-slate-600 hover:bg-[#e0f1f4] transition-colors"
-                    >
-                      <IconEdit className="w-3 h-3 hover:text-[#09596e]" />
-                    </Link>
-                  </div>
+          </thead>
+          <tbody>
+            {hospitalAdmins.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-12 text-center">
+                  <p className="text-sm font-medium text-slate-600">
+                    No Hospital Admins found
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Try adjusting your search or filters.
+                  </p>
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              hospitalAdmins.map((hospitalAdmin) => (
+                <tr
+                  key={hospitalAdmin.id}
+                  className="border-b border-slate-200 bg-white hover:bg-slate-50/70 transition-colors"
+                >
+                  <td className="px-4 py-4 flex flex-col gap-1">
+                    <span className="text-xs font-semibold text-slate-800">
+                      {`${hospitalAdmin.firstName ?? ""} ${hospitalAdmin.lastName ?? ""}`.trim() || "-"}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      {hospitalAdmin.email}
+                    </span>
+                  </td>
+
+                  <td className="px-4 py-4 text-xs text-slate-600 whitespace-nowrap">
+                    {hospitalAdmin.phone || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-xs text-slate-600 whitespace-nowrap">
+                    {hospitalAdmin.assignedHospital || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-xs text-slate-600 text-center">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold ${hospitalAdmin.isProfileCompleted
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-red-50 text-red-600"
+                        }`}
+                    >
+                      {hospitalAdmin.isProfileCompleted ? "Completed" : "Not Completed"}
+                    </span>
+                  </td>
+
+                  <td className="px-4 py-4 text-center">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold ${hospitalAdmin.status === "ACTIVE"
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-red-50 text-red-600"
+                        }`}
+                    >
+                      {hospitalAdmin.status === "ACTIVE"
+                        ? "Active"
+                        : hospitalAdmin.status === "INACTIVE"
+                          ? "Inactive"
+                          : "-"}
+                    </span>
+                  </td>
+
+                  <td className="px-4 py-4">
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        title="View Hospital"
+                        className="p-2 rounded-md text-primary hover:bg-[#e8edf4] transition-colors"
+                      >
+                        <IconEye className="w-3 h-3 hover:text-[#0d7490]" />
+                      </button>
+
+                      <Link
+                        to={`/global-admin/hospitals/${hospitalAdmin?.id}/edit`}
+                        className="p-2 rounded-md text-slate-600 hover:bg-[#e0f1f4] transition-colors"
+                      >
+                        <IconEdit className="w-3 h-3 hover:text-[#09596e]" />
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        {
+          pagination?.totalPages && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-4 bg-white border border-t-0 border-slate-300">
+              <p className="text-xs text-slate-500">
+                {pagination?.totalQueryMatchRecords === 0 ? (
+                  <span>Showing 0 of 0 hospitals</span>
+                ) : (
+                  <span>
+                    Showing
+                    <span className="font-semibold mx-1  text-slate-700">
+                      {((pagination?.currentPage ?? 1) - 1) *
+                        (pagination?.limit ?? 10) + 1} – {(pagination?.currentPage ?? 1) * (pagination?.limit ?? 10)}
+                    </span>
+                    of
+                    <span className="font-semibold mx-1 text-slate-700">{pagination?.totalQueryMatchRecords}</span>
+                    hospitals
+                  </span>
+                )}
+              </p>
+              {
+                (pagination?.totalQueryMatchRecords ?? 0) && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handlePageNavigation("previous")}
+                      disabled={(pagination?.currentPage ?? 1) === 1}
+                      className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"                                        >
+                      <IconChevronLeft />
+                    </button>
+
+                    {
+                      generatePageButtons(pagination.totalPages ?? 1, pagination.currentPage ?? 1).map((page) => (
+                        <button
+                          key={page.id}
+                          onClick={() => handlePageClick(page)}
+                          type="button"
+                          className={`w-8 h-8 flex items-center justify-center rounded-md border text-xs
+                                                                                  ${page.page === pagination.currentPage
+                              ? "bg-primary text-white border-primary font-semibold"
+                              : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                            }`}                                                >
+                          {page.page}
+                        </button>
+                      ))
+                    }
+
+                    <button
+                      type="button"
+                      onClick={() => handlePageNavigation("next")}
+                      disabled={(pagination?.currentPage ?? 1) === (pagination.totalPages ?? 1)}
+                      className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"                                        >
+                      <IconChevronRight />
+                    </button>
+                  </div>
+                )
+              }
+            </div>
+          )
+        }
+      </PageStateHandler>
     </div>
   )
 }

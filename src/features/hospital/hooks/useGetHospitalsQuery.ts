@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import * as HospitalService from "../services/hospital.service";
 import type {
@@ -7,10 +7,12 @@ import type {
     Pagination
 } from "../types/hospital.type";
 import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
+import axios from "axios";
 
 
 export function useGetHospitalQuery() {
     const [searchParams, setSearchParams] = useSearchParams();
+    console.log("useGetHospitalQuery rendered");
 
     const loadInitQuery = (): HospitalQueryParams => {
         const initQuery: HospitalQueryParams = {
@@ -51,8 +53,9 @@ export function useGetHospitalQuery() {
         params.set("status", query.status);
         params.set("sortBy", query.sortBy);
         params.set("sortOrder", query.sortOrder);
-
-        setSearchParams(params);
+        if (params.toString() !== searchParams.toString()) {
+            setSearchParams(params, { replace: true });
+        }
     }, [query, setSearchParams]);
 
     const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -60,33 +63,40 @@ export function useGetHospitalQuery() {
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
-    async function getHospitalByQuery(signal: AbortSignal) {
-        setIsFetching(true);
+    async function getHospitalByQuery(controller: AbortController) {
         setFetchError(null);
+        setIsFetching(true);
         try {
-            const res = await HospitalService.getHospitalsByQuery(query, signal);
-            if (!res.success) {
-                setFetchError("Unable to fetch hospitals");
-                setHospitals([]);
-                setPagination(null);
-                return;
-            }
+            const res = await HospitalService.getHospitalsByQuery(query, controller.signal);
+            if (controller.signal.aborted) return;
+
             if (res.data && res.data.hospitals && res.data.pagination) {
                 const { hospitals, pagination } = res.data;
                 setHospitals(hospitals);
                 setPagination(pagination);
+            } else {
+                setFetchError("Unable to fetch hospitals");
+                setHospitals([]);
+                setPagination(null);
             }
 
         } catch (error) {
+            if (axios.isCancel(error)) {
+                return;
+            }
             setFetchError(getApiErrorMessage(error));
         } finally {
-            setIsFetching(false);
+            if (!controller.signal.aborted) {
+                setIsFetching(false);
+            }
         }
     }
 
     useEffect(() => {
+
         const controller = new AbortController();
-        getHospitalByQuery(controller.signal);
+
+        getHospitalByQuery(controller);
 
         return () => controller.abort();
     }, [query]);

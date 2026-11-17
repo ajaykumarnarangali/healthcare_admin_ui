@@ -2,6 +2,7 @@ import HospitalTable from "../components/HospitalTable";
 import HospitalFilter from "../components/HospitalFilter";
 import HospitalPageHeader from "../components/HospitalPageHeader";
 import { useGetHospitalQuery } from "../hooks/useGetHospitalsQuery";
+import { useEffect } from "react";
 
 function HospitalManagement() {
 

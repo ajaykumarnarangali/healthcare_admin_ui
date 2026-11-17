@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IconSearch } from '../../../components/Icons';
 import type { LimitOption, ManagedUserFilterStatus, SortOrderOptions, StatusOption, UserQueryParams } from '../types/user.type';
 
@@ -9,19 +9,20 @@ interface UserFilterProps {
 function UserFilter({ query, setQuery }: UserFilterProps) {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const isInitialRender = useRef<boolean>(true);
 
   useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
     const timeoutRef = setTimeout(() => {
-      setQuery(prev => ({
-        ...prev,
-        search: searchTerm,
-        page: 1
-      }));
+      setQuery(prev => {
+        if (prev.search === searchTerm && prev.page === 1) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          search: searchTerm,
+          page: 1
+        };
+      });
     }, 500);
 
     return () => clearTimeout(timeoutRef);

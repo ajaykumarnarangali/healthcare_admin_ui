@@ -26,7 +26,7 @@ function HospitalAdminManagement() {
         headerProps={{ title, content, role }}
       />
       <UserFilter {...{ query, setQuery }} />
-      <HospitalAdminsTable {...{ hospitalAdmins: users as HospitalAdmin[] }} />
+      <HospitalAdminsTable {...{ hospitalAdmins: users as HospitalAdmin[], isFetching, fetchError, pagination, setQuery }} />
     </div>
   )
 }
