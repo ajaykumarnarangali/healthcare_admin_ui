@@ -9,6 +9,8 @@ import HospitalAdminsManagement from "../features/user/pages/HospitalAdminManage
 import DoctorsManagement from "../features/user/pages/DoctorManagement";
 import PatientsManagement from "../features/user/pages/PatientManagement";
 import InviteAdmin from "../features/user/pages/InviteAdmin";
+import RouteGuard from "./RouteGuard";
+import { GLOBAL_ADMIN_PERMISSIONS } from "../constants/permissions";
 
 const globalAdminRoutes: RouteObject[] = [
     {
@@ -26,12 +28,24 @@ const globalAdminRoutes: RouteObject[] = [
                         element: <HospitalManagement />,
                     },
                     {
-                        path: "create",
-                        element: <CreateHospitalPage />,
-                    },
-                    {
-                        path: ":hospitalId/edit",
-                        element: <EditHospitalPage />,
+                        element: (
+                            <RouteGuard
+                                allowedRoles={["GLOBAL_ADMIN"]}
+                                requiredPermissions={[
+                                    GLOBAL_ADMIN_PERMISSIONS.HOSPITAL.MANAGE,
+                                ]}
+                            />
+                        ),
+                        children: [
+                            {
+                                path: "create",
+                                element: <CreateHospitalPage />,
+                            },
+                            {
+                                path: ":hospitalId/edit",
+                                element: <EditHospitalPage />,
+                            },
+                        ],
                     },
                 ],
             },
@@ -43,8 +57,20 @@ const globalAdminRoutes: RouteObject[] = [
                         element: <HospitalAdminsManagement />,
                     },
                     {
-                        path: "invite",
-                        element: <InviteAdmin />,
+                        element: (
+                            <RouteGuard
+                                allowedRoles={["GLOBAL_ADMIN"]}
+                                requiredPermissions={[
+                                    GLOBAL_ADMIN_PERMISSIONS.HOSPITAL_ADMIN.MANAGE,
+                                ]}
+                            />
+                        ),
+                        children: [
+                            {
+                                path: "invite",
+                                element: <InviteAdmin />,
+                            },
+                        ],
                     },
                 ],
             },

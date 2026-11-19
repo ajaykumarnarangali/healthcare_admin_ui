@@ -5,6 +5,7 @@ import LoginPage from "./features/auth/pages/LoginPage";
 import { Fragment } from "react/jsx-runtime";
 import NotFoundPage from "./features/auth/components/NotFound";
 import { Toaster } from "sonner";
+import UnauthorizedPage from "./components/UnauthorizedPage";
 
 function App() {
 
@@ -28,6 +29,10 @@ function App() {
       path: "/global-admin",
       id: "global-admin",
       element: <ProtectedRoute allowedRole="GLOBAL_ADMIN" />,
+    },
+    {
+      path: "/unauthorized",
+      element: <UnauthorizedPage />,
     },
     {
       path: "*",
