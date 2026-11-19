@@ -30,7 +30,7 @@ function UserPageHeader({ headerProps }: UserPageHeaderProps) {
           role == "HOSPITAL_ADMIN" && canManageHospitalAdmin && (
             <Link
               className="bg-primary flex items-center gap-1 px-4 w-fit py-2 rounded-lg text-white text-sm"
-              to="/global-admin/hospitals/create">
+              to="/global-admin/hospital-admins/invite">
               <IconPlus className="h-4 text-white w-4" />
               Invite Hospital Admin
             </Link>

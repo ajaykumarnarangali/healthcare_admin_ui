@@ -8,6 +8,7 @@ import EditHospitalPage from "../features/hospital/pages/EditHospitalPage";
 import HospitalAdminsManagement from "../features/user/pages/HospitalAdminManagement";
 import DoctorsManagement from "../features/user/pages/DoctorManagement";
 import PatientsManagement from "../features/user/pages/PatientManagement";
+import InviteAdmin from "../features/user/pages/InviteAdmin";
 
 const globalAdminRoutes: RouteObject[] = [
     {
@@ -36,7 +37,16 @@ const globalAdminRoutes: RouteObject[] = [
             },
             {
                 path: "hospital-admins",
-                element: <HospitalAdminsManagement />,
+                children: [
+                    {
+                        index: true,
+                        element: <HospitalAdminsManagement />,
+                    },
+                    {
+                        path: "invite",
+                        element: <InviteAdmin />,
+                    },
+                ],
             },
             {
                 path: "doctors",
