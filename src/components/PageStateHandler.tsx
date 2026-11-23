@@ -1,4 +1,3 @@
-
 import type { ReactNode } from "react";
 import Loader from "./Loader";
 import ErrorDisplay from "./ErrorDisplay";
@@ -8,17 +7,22 @@ interface PageStateHandlerProps {
     error: string | null;
     onRetry?: () => void;
     children: ReactNode;
+    minHeight?: boolean;
 }
 
-function PageStateHandler({
+export default function PageStateHandler({
     isLoading,
     error,
     onRetry,
     children,
+    minHeight = true,
 }: PageStateHandlerProps) {
+    const containerClass = `w-full flex items-center justify-center ${minHeight ? "min-h-[70vh]" : ""
+        }`;
+
     if (isLoading) {
         return (
-            <div className="w-full min-h-[70vh] flex items-center justify-center">
+            <div className={containerClass}>
                 <Loader />
             </div>
         );
@@ -26,16 +30,11 @@ function PageStateHandler({
 
     if (error) {
         return (
-            <div className="w-full min-h-[70vh] flex items-center justify-center">
-                <ErrorDisplay
-                    message={error}
-                    onRetry={onRetry}
-                />
+            <div className={containerClass}>
+                <ErrorDisplay message={error} onRetry={onRetry} />
             </div>
         );
     }
 
     return <>{children}</>;
 }
-
-export default PageStateHandler;

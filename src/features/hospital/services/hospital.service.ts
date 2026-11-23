@@ -1,5 +1,5 @@
 import { api } from "../../../services/api";
-import type { HospitalQueryParams } from "../types/hospital.type";
+import type { HospitalQueryParams, HospitalSummaryQueryParams } from "../types/hospital.type";
 
 export async function createHospital(data: FormData) {
     const response = await api.post("/hospitals", data, {
@@ -29,6 +29,14 @@ export async function getHospital(hospitalId: string) {
 
 export async function getHospitalsByQuery(query: HospitalQueryParams, signal: AbortSignal) {
     const response = await api.get("/hospitals/admin/list", {
+        params: query,
+        signal
+    });
+    return response.data;
+}
+
+export async function getHospitalsSummaryByQuery(query: HospitalSummaryQueryParams, signal: AbortSignal) {
+    const response = await api.get("/hospitals/admin/summary", {
         params: query,
         signal
     });

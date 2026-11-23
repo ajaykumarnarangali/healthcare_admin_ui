@@ -65,6 +65,12 @@ export interface HospitalQueryParams {
     sortOrder: "ASC" | "DESC";
 }
 
+export interface HospitalSummaryQueryParams {
+    page: number;
+    limit: number;
+    search?: string;
+}
+
 export type Pagination = {
     totalRecords: number;
     totalQueryMatchRecords: number;

@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import PageStateHandler from "../../../components/PageStateHandler";
+import { useInvitation } from "../hooks/useInvitation";
 
 
 function InviteForm() {
@@ -10,6 +13,22 @@ function InviteForm() {
             ? "border-red-500 focus:ring-2 focus:ring-red-500/10"
             : ""
         }`;
+
+    const hospitalInputRef = useRef<HTMLInputElement>(null);
+
+    const {
+        hospitals,
+        isFetching,
+        fetchError,
+        // query,
+        handleFocus,
+        handleBlur,
+        hasNextPage,
+        selectedHospital,
+        setSelectedHospital,
+        isHospitalListOpen,
+        setIsHospitalListOpen
+    } = useInvitation();
 
     return (
         <div className="w-full">
@@ -120,6 +139,9 @@ function InviteForm() {
                         {/* Search */}
                         <div className="relative">
                             <input
+                                ref={hospitalInputRef}
+                                onFocus={handleFocus}
+                                onBlur={handleBlur}
                                 id="hospitalSearch"
                                 type="text"
                                 placeholder="Search hospital by name..."
@@ -128,58 +150,107 @@ function InviteForm() {
                         </div>
 
                         {/* Selected Hospital */}
-                        <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
-                            <div className="flex items-center gap-2 min-w-0">
-                                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 shrink-0">
-                                    <span className="text-primary text-sm">✓</span>
+                        {selectedHospital ? (
+                            <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 shrink-0">
+                                        <span className="text-primary text-sm">✓</span>
+                                    </div>
+
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-semibold text-text truncate">
+                                            {selectedHospital.name}
+                                        </p>
+
+                                        <p className="text-[11px] text-text-muted mt-0.5 truncate">
+                                            {selectedHospital.city}, {selectedHospital.state}
+                                        </p>
+
+                                        <p className="text-[11px] text-primary font-medium mt-0.5">
+                                            Selected hospital
+                                        </p>
+                                    </div>
                                 </div>
 
-                                <div className="min-w-0">
-                                    <p className="text-xs font-semibold text-text truncate">
-                                        Aster MIMS Hospital
-                                    </p>
-                                    <p className="text-[11px] text-text-muted mt-0.5 truncate">
-                                        Kozhikode, Kerala
-                                    </p>
-                                    <p className="text-[11px] text-primary font-medium mt-0.5">
-                                        Selected hospital
-                                    </p>
-                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedHospital(null)}
+                                    className="text-xs font-medium text-red-500 hover:text-red-600 shrink-0"
+                                >
+                                    Remove
+                                </button>
                             </div>
-
-                            <button
-                                type="button"
-                                className="text-xs font-medium text-red-500 hover:text-red-600 shrink-0"
-                            >
-                                Remove
-                            </button>
-                        </div>
+                        ) : (
+                            <div className="p-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 text-center">
+                                <p className="text-xs text-text-muted">
+                                    No hospital selected
+                                </p>
+                            </div>
+                        )}
 
                         {/* Hospital Results */}
-                        <div className="mt-1 border border-slate-300 rounded-lg bg-white shadow-sm overflow-hidden">
-                            <div className="max-h-60 overflow-y-auto">
-                                {[
-                                    "Baby Memorial Hospital",
-                                    "Amrita Hospital",
-                                    "Malabar Hospital",
-                                ].map((hospital) => (
-                                    <button
-                                        key={hospital}
-                                        type="button"
-                                        className="w-full flex items-center justify-between px-3 py-3 text-left hover:bg-slate-50 border-b border-slate-200 last:border-b-0"
-                                    >
-                                        <span className="text-sm text-text">{hospital}</span>
-                                        <span className="text-xs text-primary font-medium">Select</span>
-                                    </button>
-                                ))}
-                            </div>
+                        {isHospitalListOpen && (
+                            <PageStateHandler
+                                isLoading={isFetching}
+                                error={fetchError}
+                                minHeight={false}
+                            >
+                                {hospitals.length > 0 ? (
+                                    <div className="mt-1 border border-slate-300 rounded-lg bg-white shadow-sm overflow-hidden">
+                                        <div className="max-h-60 overflow-y-auto">
+                                            {hospitals.map((hospital) => {
+                                                const isSelected = selectedHospital?.id === hospital.id;
 
-                            <div className="px-3 py-2 border-t border-slate-200 bg-slate-50 text-center">
-                                <span className="text-xs text-text-muted">
-                                    Scroll to load more hospitals
-                                </span>
-                            </div>
-                        </div>
+                                                return (
+                                                    <button
+                                                        key={hospital.id}
+                                                        type="button"
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault();
+                                                            setSelectedHospital(hospital);
+                                                            setIsHospitalListOpen(false);
+                                                            hospitalInputRef.current?.blur();
+                                                        }}
+                                                        className={`w-full flex items-center justify-between px-3 py-3 text-left border-b border-slate-200 last:border-b-0 transition-colors ${isSelected
+                                                            ? "bg-primary/5 border-l-2 border-l-primary"
+                                                            : "hover:bg-slate-50"
+                                                            }`}
+                                                    >
+                                                        <div>
+                                                            <span className="text-sm text-text block">
+                                                                {hospital.name}
+                                                            </span>
+                                                            <span className="text-xs text-text-muted">
+                                                                {hospital.city}, {hospital.state}
+                                                            </span>
+                                                        </div>
+
+                                                        <span className={`text-xs font-medium ${isSelected ? "text-primary" : "text-text-muted"
+                                                            }`}>
+                                                            {isSelected ? "Selected ✓" : "Select"}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {hasNextPage && (
+                                            <div className="px-3 py-2 border-t border-slate-200 bg-slate-50 text-center">
+                                                <span className="text-xs text-text-muted">
+                                                    Scroll to load more hospitals
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="mt-1 border border-slate-200 rounded-lg bg-white p-4 text-center">
+                                        <p className="text-sm text-text-muted">
+                                            No hospitals found.
+                                        </p>
+                                    </div>
+                                )}
+                            </PageStateHandler>
+                        )}
                     </div>
                 </div>
 
@@ -187,21 +258,23 @@ function InviteForm() {
                 <div className="flex justify-end gap-3">
                     <button
                         type="button"
-                        className="px-5 py-[10px] text-[13px] font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-colors"
+                        className="px-5 py-[10px] text-[13px] font-medium text-slate-600 
+                        bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-colors"
                     >
                         Cancel
                     </button>
 
                     <button
                         type="submit"
-                        className="px-5 py-[10px] text-[13px] font-semibold text-white rounded-lg bg-primary hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-5 py-[10px] text-[13px] font-semibold text-white rounded-lg
+                        bg-primary hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Send Invitation
                     </button>
                 </div>
 
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 
