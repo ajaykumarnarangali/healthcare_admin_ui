@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { HospitalSummaryQueryParams } from "../../hospital/types/hospital.type";
 import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
 import * as HosptialService from "../../hospital/services/hospital.service";
+import type { InviteFormOutput } from "../schemas/admin.invite";
 
 
 interface HospitalSummary {
@@ -65,6 +66,16 @@ export function useInvitation() {
         setIsHospitalListOpen(true);
     }
 
+    function isEqual(
+        prevQuery: HospitalSummaryQueryParams,
+        currentQuery: HospitalSummaryQueryParams
+    ) {
+        return Object.keys(prevQuery).every((key) => {
+            const typedKey = key as keyof HospitalSummaryQueryParams;
+            return prevQuery[typedKey] === currentQuery[typedKey];
+        });
+    }
+
     function handleBlur() {
         controllerRef.current?.abort();
         controllerRef.current = null;
@@ -97,24 +108,35 @@ export function useInvitation() {
             })
         }
     }
-    
+
+    const previousQueryRef = useRef(query);
+
     useEffect(() => {
+        if (isEqual(previousQueryRef.current, query)) {
+            return;
+        }
+        previousQueryRef.current = query;
+
         const controller = new AbortController();
-        controllerRef.current = controller;
 
         fetchHospitalsSummary(query, controller.signal);
 
         return () => controller.abort();
     }, [query]);
 
+    async function handleInvite(data: InviteFormOutput) {
+        console.log("data", data);
+    }
+
     return {
-        query,
+        setQuery,
         isFetching,
         fetchError,
         hospitals,
         handleBlur,
         handleFocus,
         hasNextPage,
+        handleInvite,
         selectedHospital,
         setSelectedHospital,
         setIsHospitalListOpen,

@@ -12,7 +12,6 @@ import axios from "axios";
 
 export function useGetHospitalQuery() {
     const [searchParams, setSearchParams] = useSearchParams();
-    console.log("useGetHospitalQuery rendered");
 
     const loadInitQuery = (): HospitalQueryParams => {
         const initQuery: HospitalQueryParams = {

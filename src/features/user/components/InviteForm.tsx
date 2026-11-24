@@ -1,6 +1,14 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import PageStateHandler from "../../../components/PageStateHandler";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useInvitation } from "../hooks/useInvitation";
+import {
+    adminInviteSchema,
+    InviteFormInitValues,
+    type InviteFormInput,
+    type InviteFormOutput
+} from "../schemas/admin.invite";
 
 
 function InviteForm() {
@@ -15,20 +23,53 @@ function InviteForm() {
         }`;
 
     const hospitalInputRef = useRef<HTMLInputElement>(null);
+    const hospitalContainerRef = useRef<HTMLDivElement>(null);
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const {
+        register: registerField,
+        handleSubmit,
+        setValue,
+        formState: { errors, isSubmitting }
+    } = useForm<InviteFormInput, any, InviteFormOutput>({
+        resolver: zodResolver(adminInviteSchema),
+        defaultValues: InviteFormInitValues
+    })
 
     const {
         hospitals,
         isFetching,
         fetchError,
-        // query,
+        setQuery,
         handleFocus,
         handleBlur,
         hasNextPage,
         selectedHospital,
         setSelectedHospital,
         isHospitalListOpen,
+        handleHospitalScroll,
+        handleInvite,
         setIsHospitalListOpen
     } = useInvitation();
+
+    useEffect(() => {
+        const timeoutRef = setTimeout(() => {
+            setQuery(prev => {
+                if (prev.search === searchTerm && prev.page === 1) {
+                    return prev;
+                }
+
+                return {
+                    ...prev,
+                    search: searchTerm,
+                    page: 1
+                };
+            });
+        }, 500);
+
+        return () => clearTimeout(timeoutRef);
+    }, [searchTerm])
 
     return (
         <div className="w-full">
@@ -43,7 +84,9 @@ function InviteForm() {
                     Send an invitation to assign an administrator to a hospital.
                 </p>
             </div>
-            <div className="w-full flex flex-col gap-4 pb-6">
+            <form
+                onSubmit={handleSubmit((data) => handleInvite(data))}
+                className="w-full flex flex-col gap-4 pb-6">
 
                 {/* Admin Information */}
                 <div className="p-3 pt-4 pb-6 lg:p-6 rounded-xl border border-slate-200 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
@@ -63,16 +106,16 @@ function InviteForm() {
                                 id="name"
                                 type="text"
                                 placeholder="Enter full name"
-                                // {...registerField("name")}
-                                // aria-invalid={!!errors.name}
-                                className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                                {...registerField("name")}
+                                aria-invalid={!!errors.name}
+                                className={`${getErrorInputClass(!!errors.name)} placeholder:text-xs`}
                             />
 
-                            {/* {errors.name && (
+                            {errors.name && (
                                 <p className="text-xs text-red-600" role="alert">
                                     {errors.name.message}
                                 </p>
-                            )} */}
+                            )}
                         </div>
 
                         {/* Email Address */}
@@ -85,16 +128,16 @@ function InviteForm() {
                                 id="email"
                                 type="email"
                                 placeholder="Enter email address"
-                                // {...registerField("email")}
-                                // aria-invalid={!!errors.email}
-                                className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                                {...registerField("email")}
+                                aria-invalid={!!errors.email}
+                                className={`${getErrorInputClass(!!errors.email)} placeholder:text-xs`}
                             />
 
-                            {/* {errors.email && (
+                            {errors.email && (
                                 <p className="text-xs text-red-600" role="alert">
                                     {errors.email.message}
                                 </p>
-                            )} */}
+                            )}
                         </div>
 
                         {/* Confirm Email */}
@@ -107,16 +150,16 @@ function InviteForm() {
                                 id="confirmEmail"
                                 type="email"
                                 placeholder="Re-enter email address"
-                                // {...registerField("confirmEmail")}
-                                // aria-invalid={!!errors.confirmEmail}
-                                className={`${getErrorInputClass(false)} placeholder:text-xs`}
+                                {...registerField("confirmEmail")}
+                                aria-invalid={!!errors.confirmEmail}
+                                className={`${getErrorInputClass(!!errors.confirmEmail)} placeholder:text-xs`}
                             />
 
-                            {/* {errors.confirmEmail && (
+                            {errors.confirmEmail && (
                                 <p className="text-xs text-red-600" role="alert">
                                     {errors.confirmEmail.message}
                                 </p>
-                            )} */}
+                            )}
                         </div>
 
                     </div>
@@ -142,6 +185,7 @@ function InviteForm() {
                                 ref={hospitalInputRef}
                                 onFocus={handleFocus}
                                 onBlur={handleBlur}
+                                onChange={(e) => { setSearchTerm(e.target.value) }}
                                 id="hospitalSearch"
                                 type="text"
                                 placeholder="Search hospital by name..."
@@ -174,7 +218,14 @@ function InviteForm() {
 
                                 <button
                                     type="button"
-                                    onClick={() => setSelectedHospital(null)}
+                                    onClick={() => {
+                                        setSelectedHospital(null)
+                                        setValue('hospital_id', '', {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                            shouldTouch: true
+                                        });
+                                    }}
                                     className="text-xs font-medium text-red-500 hover:text-red-600 shrink-0"
                                 >
                                     Remove
@@ -188,16 +239,26 @@ function InviteForm() {
                             </div>
                         )}
 
+                        {errors.hospital_id && (
+                            <p className="text-xs text-red-600" role="alert">
+                                {errors.hospital_id.message}
+                            </p>
+                        )}
+
                         {/* Hospital Results */}
                         {isHospitalListOpen && (
                             <PageStateHandler
-                                isLoading={isFetching}
+                                isLoading={isFetching && hospitals.length == 0}
                                 error={fetchError}
                                 minHeight={false}
                             >
                                 {hospitals.length > 0 ? (
                                     <div className="mt-1 border border-slate-300 rounded-lg bg-white shadow-sm overflow-hidden">
-                                        <div className="max-h-60 overflow-y-auto">
+                                        <div
+                                            ref={hospitalContainerRef}
+                                            onScroll={() => { handleHospitalScroll(hospitalContainerRef) }}
+                                            className="max-h-60 overflow-y-auto"
+                                        >
                                             {hospitals.map((hospital) => {
                                                 const isSelected = selectedHospital?.id === hospital.id;
 
@@ -208,7 +269,14 @@ function InviteForm() {
                                                         onMouseDown={(e) => {
                                                             e.preventDefault();
                                                             setSelectedHospital(hospital);
+                                                            setValue('hospital_id', hospital.id, {
+                                                                shouldValidate: true,
+                                                                shouldDirty: true,
+                                                                shouldTouch: true
+                                                            });
                                                             setIsHospitalListOpen(false);
+                                                            setSearchTerm("");
+                                                            setQuery({ search: "", page: 1, limit: 10 });
                                                             hospitalInputRef.current?.blur();
                                                         }}
                                                         className={`w-full flex items-center justify-between px-3 py-3 text-left border-b border-slate-200 last:border-b-0 transition-colors ${isSelected
@@ -273,7 +341,7 @@ function InviteForm() {
                     </button>
                 </div>
 
-            </div >
+            </form >
         </div >
     )
 }

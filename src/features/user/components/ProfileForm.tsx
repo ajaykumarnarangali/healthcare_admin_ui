@@ -28,7 +28,6 @@ function ProfileForm() {
         handleFormSubmit,
         userProfile,
         fetchError,
-        submitError,
         isSubmitting,
         isLoading
     } = useProfileManagement();

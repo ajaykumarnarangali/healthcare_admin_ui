@@ -75,7 +75,6 @@ export function useGetUsersQuery(role: ManagedUserRole) {
             if (axios.isCancel(error)) {
                 return;
             }
-            console.log(error)
             setFetchError(getApiErrorMessage(error));
         } finally {
             if (!controller.signal.aborted) {
