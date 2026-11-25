@@ -9,6 +9,7 @@ import {
     type InviteFormInput,
     type InviteFormOutput
 } from "../schemas/admin.invite";
+import { Link } from "react-router-dom";
 
 
 function InviteForm() {
@@ -324,20 +325,22 @@ function InviteForm() {
 
                 {/* Actions */}
                 <div className="flex justify-end gap-3">
-                    <button
-                        type="button"
-                        className="px-5 py-[10px] text-[13px] font-medium text-slate-600 
-                        bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-colors"
+                    <Link
+                        to="/global-admin/hospital-admins"
+                        className="px-5 py-[10px] text-[13px] font-medium text-slate-600
+                                bg-white border border-slate-300 rounded-lg hover:bg-slate-50
+                                hover:border-slate-400 transition-colors"
                     >
                         Cancel
-                    </button>
+                    </Link>
 
                     <button
                         type="submit"
+                        disabled={isSubmitting}
                         className="px-5 py-[10px] text-[13px] font-semibold text-white rounded-lg
-                        bg-primary hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                                   bg-primary hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Send Invitation
+                        {isSubmitting ? "Sending Invitation..." : "Send Invitation"}
                     </button>
                 </div>
 

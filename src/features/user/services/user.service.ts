@@ -1,4 +1,5 @@
 import { api } from "../../../services/api";
+import type { InviteFormOutput } from "../schemas/admin.invite";
 import type { UserQueryParams } from "../types/user.type";
 
 export async function getUserProfile() {
@@ -26,11 +27,15 @@ export async function updateUserProfile(data: FormData) {
     return response.data;
 }
 
-
 export async function getUsersByQuery(query: UserQueryParams, signal: AbortSignal) {
     const response = await api.get("/user/", {
         params: query,
         signal
     });
+    return response.data;
+}
+
+export async function sentInvitation(data: InviteFormOutput) {
+    const response = await api.post("/user/invitations/hospital-admin", data);
     return response.data;
 }

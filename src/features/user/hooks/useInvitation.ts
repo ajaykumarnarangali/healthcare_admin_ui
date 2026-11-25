@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import type { HospitalSummaryQueryParams } from "../../hospital/types/hospital.type";
 import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
 import * as HosptialService from "../../hospital/services/hospital.service";
+import * as userService from "../services/user.service";
 import type { InviteFormOutput } from "../schemas/admin.invite";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 
 interface HospitalSummary {
@@ -29,6 +32,7 @@ export function useInvitation() {
     const [isHospitalListOpen, setIsHospitalListOpen] = useState<boolean>(false);
     const [selectedHospital, setSelectedHospital] = useState<HospitalSummary | null>(null);
 
+    const navigate = useNavigate();
     const controllerRef = useRef<AbortController | null>(null);
 
     async function fetchHospitalsSummary(query: HospitalSummaryQueryParams, signal: AbortSignal) {
@@ -125,7 +129,16 @@ export function useInvitation() {
     }, [query]);
 
     async function handleInvite(data: InviteFormOutput) {
-        console.log("data", data);
+        try {
+            const res = await userService.sentInvitation(data);
+
+            if (res.success) {
+                toast.success("Admin invitation sent successfully");
+                navigate("/global-admin/hospital-admins");
+            }
+        } catch (error) {
+            toast.error(getApiErrorMessage(error));
+        }
     }
 
     return {
