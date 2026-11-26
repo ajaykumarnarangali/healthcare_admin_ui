@@ -41,3 +41,40 @@ export const InviteFormInitValues = {
 
 export type InviteFormInput = z.input<typeof adminInviteSchema>;
 export type InviteFormOutput = z.output<typeof adminInviteSchema>;
+
+
+export const adminAcceptInvitationSchema = z.object({
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(128, "Password must not exceed 128 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(
+            /[^A-Za-z0-9]/,
+            "Password must contain at least one special character"
+        ),
+    confirmPassword: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(128, "Password must not exceed 128 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(
+            /[^A-Za-z0-9]/,
+            "Password must contain at least one special character"
+        )
+}).superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+        ctx.addIssue({
+            code: 'custom',
+            message: 'Passwords do not match',
+            path: ['confirmPassword']
+        });
+    }
+});
+
+export type AdminInviteAcceptFormInput = z.input<typeof adminAcceptInvitationSchema>;
+export type AdminInviteAcceptFormOutput = z.output<typeof adminAcceptInvitationSchema>;

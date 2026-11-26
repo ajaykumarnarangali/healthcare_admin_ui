@@ -6,6 +6,7 @@ import { Fragment } from "react/jsx-runtime";
 import NotFoundPage from "./features/auth/components/NotFound";
 import { Toaster } from "sonner";
 import UnauthorizedPage from "./components/UnauthorizedPage";
+import AcceptInvitation from "./features/user/pages/AcceptInvitation";
 
 function App() {
 
@@ -17,6 +18,10 @@ function App() {
         {
           path: "/",
           element: <LoginPage />,
+        },
+        {
+          path: '/accept-invitation',
+          element: <AcceptInvitation />
         }
       ],
     },

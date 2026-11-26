@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import type { UseFormReset } from "react-hook-form";
 import { loginUser } from "../services/auth.service";
 import { type LoginData } from "../schemas/auth.schema";
-import { roleRoutes } from "../types/auth.types";
+import { roleRoutes, type userRoles } from "../types/auth.types";
 import { useAppDispatch } from "../../../hooks/useAppDispatch ";
 import { setCredentials, setPermissions, setUser, setAuthLoading, setAuthenticated } from "../../../store/slices"
 import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
@@ -50,7 +50,7 @@ export function useLogin() {
                 dispatch(setAuthLoading(false));
                 reset();
 
-                navigate(roleRoutes[data.user.role]);
+                navigate(roleRoutes[data.user.role as userRoles]);
             }
         } catch (err: unknown) {
             let message = getApiErrorMessage(err);
