@@ -1,7 +1,14 @@
-import { Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { adminAcceptInvitationSchema, type AdminInviteAcceptFormInput, type AdminInviteAcceptFormOutput } from "../schemas/admin.invite";
+import * as userService from "../services/user.service";
+import {
+    adminAcceptInvitationSchema,
+    type AdminInviteAcceptFormInput,
+    type AdminInviteAcceptFormOutput
+} from "../schemas/admin.invite";
+import { toast } from "sonner";
+import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
 
 
 function AcceptInvitationForm() {
@@ -9,15 +16,36 @@ function AcceptInvitationForm() {
 
     const {
         register: registerField,
-        formState: { errors },
+        formState: { errors, isSubmitting },
         handleSubmit
     } = useForm<AdminInviteAcceptFormInput, any, AdminInviteAcceptFormOutput>({
         resolver: zodResolver(adminAcceptInvitationSchema)
     });
 
-    async function handleInvitation(data: AdminInviteAcceptFormOutput) {
-        console.log(data)
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
 
+    async function handleInvitation(data: AdminInviteAcceptFormOutput) {
+        const token = searchParams.get("token");
+
+        if (!token?.trim()) {
+            toast.error("Invalid or missing invitation link. Please use the invitation link sent to your email.");
+            return;
+        }
+
+        try {
+            const res = await userService.acceptInvitation(data, token);
+
+            if (res.success) {
+                toast.success("Your invitation has been accepted successfully.");
+                navigate("/", { replace: true });
+                return;
+            }
+
+            toast.error(res.message || "Unable to accept invitation. Please try again.");
+        } catch (error) {
+            toast.error(getApiErrorMessage(error));
+        }
     }
 
     return (
@@ -79,8 +107,9 @@ function AcceptInvitationForm() {
             <button
                 className="mt-1 h-11 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
                 type="submit"
+                disabled={isSubmitting}
             >
-                Accept Invitation
+                {isSubmitting ? "Accepting..." : "Accept Invitation"}
             </button>
         </form>
     )
